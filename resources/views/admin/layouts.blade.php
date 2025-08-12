@@ -37,6 +37,24 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a href="{{ route('category_subcategory.index') }}" class="nav-link {{ $currentRoute === 'category_subcategory.index' ? 'active' : '' }}">
+                    <i class="bi bi-people"></i>
+                    <span class="nav-text">Category & Subcategory</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('products.index') }}" class="nav-link {{ $currentRoute === 'products.index' ? 'active' : '' }}">
+                    <i class="bi bi-box"></i>
+                    <span class="nav-text">Products</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('products.create') }}" class="nav-link {{ $currentRoute === 'products.create' ? 'active' : '' }}">
+                    <i class="bi bi-box"></i>
+                    <span class="nav-text">Products Add</span>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a href="{{ route('admin.users.index') }}" class="nav-link {{ $currentRoute === 'admin.users.index' ? 'active' : '' }}">
                     <i class="bi bi-people"></i>
                     <span class="nav-text">Users</span>
@@ -54,12 +72,7 @@
                     <span class="nav-text">Orders</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a href="" class="nav-link {{ $currentRoute === 'admin.products.index' ? 'active' : '' }}">
-                    <i class="bi bi-box"></i>
-                    <span class="nav-text">Products</span>
-                </a>
-            </li>
+            
             <li class="nav-item">
                 <a href="" class="nav-link {{ $currentRoute === 'admin.settings' ? 'active' : '' }}">
                     <i class="bi bi-gear"></i>
