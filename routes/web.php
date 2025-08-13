@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\users\UserController;
 use App\Http\Controllers\Admin\Product\CategoriesController;
 use App\Http\Controllers\Admin\Product\SubcategoryController;
 use App\Http\Controllers\Admin\Product\ProductController;
+use App\Http\Controllers\Admin\Order\OrderController;
 
 // User routes
 Route::get('/', function () {
@@ -35,7 +36,9 @@ Route::prefix('admin')->group(function () {
 
         Route::resource('products', ProductController::class);
 
-        
+        Route::resource('orders', OrderController::class);
+        Route::patch('orders/{order}/status/{status}', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+
 
         Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
         Route::get('/profile', [ProfileController::class, 'index'])->name('admin.profile');

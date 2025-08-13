@@ -250,6 +250,14 @@ body {
     background-color: var(--light-color);
     transform: translateX(5px);
 }
+.rotate-icon {
+    transition: transform 0.3s ease;
+}
+
+.collapse.show + .nav-link .rotate-icon,
+.nav-link[aria-expanded="true"] .rotate-icon {
+    transform: rotate(90deg);
+}
 
 /* Responsive Design */
 

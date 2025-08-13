@@ -24,63 +24,77 @@
                 Admin Panel
             </h4>
         </div>
+
         @php
-            // Get current route name or URI for active highlighting
             $currentRoute = Route::currentRouteName();
+
+            // Define menu structure
+            $menus = [
+                [
+                    'title' => 'Dashboard',
+                    'icon' => 'bi-house-door',
+                    'route' => 'admin.dashboard',
+                ],
+                [
+                    'title' => 'Category & Subcategory',
+                    'icon' => 'bi-people',
+                    'route' => 'category_subcategory.index',
+                ],
+                [
+                    'title' => 'Products',
+                    'icon' => 'bi-box',
+                    'children' => [
+                        ['title' => 'Product List', 'route' => 'products.index'],
+                        ['title' => 'Add Product', 'route' => 'products.create'],
+                    ],
+                ],
+                [
+                    'title' => 'Users',
+                    'icon' => 'bi-people',
+                    'route' => 'admin.users.index',
+                ],
+            ];
         @endphp
 
         <ul class="sidebar-nav">
-            <li class="nav-item">
-                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ $currentRoute === 'admin.dashboard' ? 'active' : '' }}">
-                    <i class="bi bi-house-door"></i>
-                    <span class="nav-text">Dashboard</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ route('category_subcategory.index') }}" class="nav-link {{ $currentRoute === 'category_subcategory.index' ? 'active' : '' }}">
-                    <i class="bi bi-people"></i>
-                    <span class="nav-text">Category & Subcategory</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ route('products.index') }}" class="nav-link {{ $currentRoute === 'products.index' ? 'active' : '' }}">
-                    <i class="bi bi-box"></i>
-                    <span class="nav-text">Products</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ route('products.create') }}" class="nav-link {{ $currentRoute === 'products.create' ? 'active' : '' }}">
-                    <i class="bi bi-box"></i>
-                    <span class="nav-text">Products Add</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ route('admin.users.index') }}" class="nav-link {{ $currentRoute === 'admin.users.index' ? 'active' : '' }}">
-                    <i class="bi bi-people"></i>
-                    <span class="nav-text">Users</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="" class="nav-link {{ $currentRoute === 'admin.analytics' ? 'active' : '' }}">
-                    <i class="bi bi-graph-up"></i>
-                    <span class="nav-text">Analytics</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="" class="nav-link {{ $currentRoute === 'admin.orders.index' ? 'active' : '' }}">
-                    <i class="bi bi-cart"></i>
-                    <span class="nav-text">Orders</span>
-                </a>
-            </li>
-            
-            <li class="nav-item">
-                <a href="" class="nav-link {{ $currentRoute === 'admin.settings' ? 'active' : '' }}">
-                    <i class="bi bi-gear"></i>
-                    <span class="nav-text">Settings</span>
-                </a>
-            </li>
+            @foreach ($menus as $menu)
+                @if (isset($menu['children']))
+                    @php
+                        $childRoutes = array_column($menu['children'], 'route');
+                        $isActive = in_array($currentRoute, $childRoutes) ? 'active' : '';
+                        $isShow = in_array($currentRoute, $childRoutes) ? 'show' : '';
+                    @endphp
+                    <li class="nav-item">
+                        <a class="nav-link d-flex justify-content-between align-items-center {{ $isActive }}"
+                        data-bs-toggle="collapse" href="#collapse{{ Str::slug($menu['title']) }}" role="button"
+                        aria-expanded="{{ $isShow ? 'true' : 'false' }}">
+                            <span><i class="bi {{ $menu['icon'] }}"></i> {{ $menu['title'] }}</span>
+                            <i class="bi bi-chevron-right small rotate-icon"></i>
+                        </a>
+                        <div class="collapse {{ $isShow }}" id="collapse{{ Str::slug($menu['title']) }}">
+                            <ul class="nav flex-column ms-3">
+                                @foreach ($menu['children'] as $child)
+                                    <li class="nav-item">
+                                        <a href="{{ route($child['route']) }}"
+                                        class="nav-link {{ $currentRoute === $child['route'] ? 'active' : '' }}">
+                                            {{ $child['title'] }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </li>
+                @else
+                    <li class="nav-item">
+                        <a href="{{ route($menu['route']) }}"
+                        class="nav-link {{ $currentRoute === $menu['route'] ? 'active' : '' }}">
+                            <i class="bi {{ $menu['icon'] }}"></i>
+                            <span class="nav-text">{{ $menu['title'] }}</span>
+                        </a>
+                    </li>
+                @endif
+            @endforeach
         </ul>
-
     </nav>
 
     {{-- Main Content Wrapper --}}

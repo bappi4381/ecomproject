@@ -35,6 +35,7 @@
     <table class="table table-bordered table-striped">
         <thead class="table-dark">
             <tr>
+                <th>Product ID</th>
                 <th>Name</th>
                 <th>Category</th>
                 <th>Subcategory</th>
@@ -48,19 +49,21 @@
         <tbody>
             @forelse($products as $product)
                 <tr>
+                    <td>{{ $product->product_id }}</td>
                     <td>{{ $product->name }}</td>
                     <td>{{ $product->category->name ?? '-' }}</td>
                     <td>{{ $product->subcategory->name ?? '-' }}</td>
                     <td>tk. {{ number_format($product->price, 2) }}</td>
-                    <td>{{ $product->discount ?? '0' }}</td>
+                    <td>{{ $product->discount ? (int)$product->discount . '%' : '0%' }}</td>
                     <td>
                         @foreach($product->sizes as $size)
                             <div>Size: {{ $size->size }}, Stock: {{ $size->stock }}</div>
                         @endforeach
                     </td>
                     <td>
-                        @if($product->image)
-                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" width="60" height="60" class="rounded">
+                        @if($product->images->count())
+                            <img src="{{ asset('storage/' . $product->images->first()->image) }}" 
+                                alt="{{ $product->name }}" width="60" height="60" class="rounded border">
                         @else
                             <em>No image</em>
                         @endif

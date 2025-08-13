@@ -12,8 +12,19 @@ class Product extends Model
 
     protected $fillable = [
         'category_id', 'subcategory_id', 'name', 'description', 
-        'price', 'discount', 'image'
+        'price', 'discount','discounted_price'
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($product) {
+            $latest = Product::latest('id')->first();
+            $number = $latest ? intval(substr($latest->product_id ?? 'PROD-0000', 5)) + 1 : 1;
+            $product->product_id = 'PROD-' . str_pad($number, 4, '0', STR_PAD_LEFT);
+        });
+    }
 
     public function category()
     {
@@ -28,5 +39,9 @@ class Product extends Model
     public function sizes()
     {
         return $this->hasMany(ProductSize::class);
+    }
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class);
     }
 }
