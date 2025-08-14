@@ -258,6 +258,38 @@ body {
 .nav-link[aria-expanded="true"] .rotate-icon {
     transform: rotate(90deg);
 }
+.custom-pagination .pagination {
+    margin-bottom: 0;
+}
+
+.custom-pagination .page-item .page-link {
+    border-radius: 50% !important;
+    margin: 0 2px;
+    padding: 0.4rem 0.75rem;
+    color: #555;
+    border: none;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.custom-pagination .page-item .page-link:hover {
+    background: #0d6efd;
+    color: #fff;
+}
+
+.custom-pagination .page-item.active .page-link {
+    background: #0d6efd;
+    border-color: #0d6efd;
+    color: #fff;
+    font-weight: bold;
+    box-shadow: 0 0 6px rgba(13, 110, 253, 0.5);
+}
+
+.custom-pagination .page-item.disabled .page-link {
+    background: #e9ecef;
+    color: #adb5bd;
+    border: none;
+}
 
 /* Responsive Design */
 

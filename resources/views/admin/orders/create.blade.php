@@ -1,101 +1,130 @@
 @extends('admin.layouts')
-@section('title', isset($product) ? 'Edit Product' : 'Add New Product')
 
 @section('content')
-<div class="container-fluid py-3" style="max-width: 1200px;">
-    <h4>Create New Order</h4>
-        <p class="text-muted">Select customer and add products to create a new order.</p>
+<div class="container mt-4">
+    <h3 class="mb-4">Create Order</h3>
 
-        {{-- Display validation errors --}}
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>  
-        @endif
-        {{-- Display success message if any --}}
-        @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-        {{-- Order creation form --}}
+    <form action="{{ route('orders.store') }}" method="POST" id="orderForm">
+        @csrf
 
-        <form action="{{ route('orders.store') }}" method="POST" id="order-form">
-            @csrf
-            <div class="mb-3">
-                <label for="user_id">Select Customer</label>
-                <select name="user_id" id="user_id" class="form-control">
-                    @foreach($users as $user)
+        {{-- Select Customer --}}
+        <div class="mb-4">
+            <label class="form-label fw-bold">Customer</label>
+            <select name="user_id" class="form-select" required>
+                <option value="">-- Select Customer --</option>
+                @foreach($users as $user)
                     <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
-                    @endforeach
-                </select>
-            </div>
+                @endforeach
+            </select>
+        </div>
 
-            <h5>Products</h5>
-            <div id="products-wrapper">
-                <div class="product-item mb-2 d-flex gap-2 align-items-center">
-                    <select name="products[0][product_id]" class="form-control product-select">
+        {{-- Products Section --}}
+        <h5 class="mb-3">Products</h5>
+        <div id="products-wrapper" class="mb-3">
+            <div class="product-row row g-2 align-items-center mb-2">
+                <div class="col-md-6">
+                    <select name="products[0][id]" class="form-select product-select" required>
+                        <option value="">-- Select Product --</option>
                         @foreach($products as $product)
-                        <option value="{{ $product->id }}" data-price="{{ $product->price }}">
-                            {{ $product->name }} - ${{ $product->price }}
-                        </option>
+                            <option value="{{ $product->id }}" data-price="{{ $product->price }}">
+                                {{ $product->name }} - ${{ number_format($product->price, 2) }}
+                            </option>
                         @endforeach
                     </select>
-                    <input type="number" name="products[0][quantity]" class="form-control quantity-input" placeholder="Qty" value="1" min="1">
-                    <span class="subtotal">$0.00</span>
+                </div>
+                <div class="col-md-2">
+                    <input type="number" name="products[0][quantity]" class="form-control quantity-input" min="1" value="1" required>
+                </div>
+                <div class="col-md-2">
+                    <span class="subtotal badge bg-light text-dark w-100">$0.00</span>
+                </div>
+                <div class="col-md-2 text-end">
+                    <button type="button" class="btn btn-danger btn-sm remove-product d-none">×</button>
                 </div>
             </div>
-            <button type="button" id="add-product" class="btn btn-sm btn-secondary mb-3">Add More Product</button>
+        </div>
 
-            <h5>Total: $<span id="total-price">0.00</span></h5>
+        <button type="button" id="add-product" class="btn btn-outline-secondary btn-sm mb-3">
+            + Add Product
+        </button>
 
-            <button type="submit" class="btn btn-primary">Create Order</button>
-        </form> 
-       
+        {{-- Total Price --}}
+        <div class="mb-3">
+            <h5>Total: <span id="totalPrice" class="text-primary">$0.00</span></h5>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Create Order</button>
+    </form>
 </div>
+@endsection
 
-
-{{-- Include necessary scripts --}}
-
+@section('scripts')
 <script>
-let counter = 1;
+let productIndex = 1;
+const productsData = @json($products);
 
-function updateTotals() {
-    let total = 0;
-    document.querySelectorAll('#products-wrapper .product-item').forEach(item => {
-        const select = item.querySelector('.product-select');
-        const qty = parseInt(item.querySelector('.quantity-input').value) || 0;
-        const price = parseFloat(select.selectedOptions[0].dataset.price) || 0;
-        const subtotal = qty * price;
-        item.querySelector('.subtotal').textContent = `$${subtotal.toFixed(2)}`;
-        total += subtotal;
-    });
-    document.getElementById('total-price').textContent = total.toFixed(2);
+function updateSubtotal(row) {
+    const price = parseFloat(row.querySelector('.product-select').selectedOptions[0]?.dataset.price || 0);
+    const quantity = parseInt(row.querySelector('.quantity-input').value || 0);
+    const subtotal = price * quantity;
+    row.querySelector('.subtotal').textContent = `$${subtotal.toFixed(2)}`;
+    updateTotal();
 }
 
-// Update totals when quantity or product changes
-document.getElementById('products-wrapper').addEventListener('input', updateTotals);
-document.getElementById('products-wrapper').addEventListener('change', updateTotals);
-
-// Add more product rows
-document.getElementById('add-product').addEventListener('click', function(){
-    let wrapper = document.getElementById('products-wrapper');
-    let newItem = document.querySelector('.product-item').cloneNode(true);
-
-    newItem.querySelectorAll('select,input').forEach(el => {
-        let name = el.getAttribute('name').replace(/\d+/, counter);
-        el.setAttribute('name', name);
-        if(el.type === 'number') el.value = 1;
+function updateTotal() {
+    let total = 0;
+    document.querySelectorAll('#products-wrapper .product-row').forEach(row => {
+        total += parseFloat(row.querySelector('.subtotal').textContent.replace('$', '') || 0);
     });
+    document.getElementById('totalPrice').textContent = `$${total.toFixed(2)}`;
+}
 
-    wrapper.appendChild(newItem);
-    counter++;
-    updateTotals();
+// Event: Quantity or Product change
+document.getElementById('products-wrapper').addEventListener('input', function(e) {
+    if (e.target.classList.contains('product-select') || e.target.classList.contains('quantity-input')) {
+        updateSubtotal(e.target.closest('.product-row'));
+    }
 });
 
-// Initialize totals on page load
-updateTotals();
+// Add Product Row
+document.getElementById('add-product').addEventListener('click', function() {
+    const wrapper = document.getElementById('products-wrapper');
+    let options = '<option value="">-- Select Product --</option>';
+    productsData.forEach(p => {
+        options += `<option value="${p.id}" data-price="${p.price}">${p.name} - $${parseFloat(p.price).toFixed(2)}</option>`;
+    });
+
+    const row = document.createElement('div');
+    row.classList.add('product-row', 'row', 'g-2', 'align-items-center', 'mb-2');
+    row.innerHTML = `
+        <div class="col-md-6">
+            <select name="products[${productIndex}][id]" class="form-select product-select" required>
+                ${options}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="products[${productIndex}][quantity]" class="form-control quantity-input" min="1" value="1" required>
+        </div>
+        <div class="col-md-2">
+            <span class="subtotal badge bg-light text-dark w-100">$0.00</span>
+        </div>
+        <div class="col-md-2 text-end">
+            <button type="button" class="btn btn-danger btn-sm remove-product">×</button>
+        </div>
+    `;
+    wrapper.appendChild(row);
+    productIndex++;
+});
+
+// Remove Product Row
+document.getElementById('products-wrapper').addEventListener('click', function(e) {
+    if (e.target.classList.contains('remove-product')) {
+        e.target.closest('.product-row').remove();
+        updateTotal();
+    }
+});
+
+// Init first row subtotal
+updateSubtotal(document.querySelector('.product-row'));
 </script>
 @endsection

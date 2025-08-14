@@ -32,43 +32,45 @@ class OrderController extends Controller
     /**
      * Store a newly created order
      */
-    public function store(Request $request)
+     public function store(Request $request)
     {
         $request->validate([
-            'customer_id' => 'required|exists:users,id',
+            'user_id' => 'required|exists:users,id',
             'products' => 'required|array',
             'products.*.id' => 'required|exists:products,id',
-            'products.*.quantity' => 'required|integer|min:1'
+            'products.*.quantity' => 'required|integer|min:1',
         ]);
 
         // Create Order
         $order = Order::create([
-            'customer_id' => $request->customer_id,
+            'user_id' => $request->user_id,
             'status' => 'pending',
-            'total' => 0 // will update later
+            'total_price' => 0 // will update later
         ]);
 
-        $total = 0;
+        $total_price = 0;
 
         // Add Products to Order
         foreach ($request->products as $productData) {
-            $product = Product::find($productData['id']);
+            $product = Product::findOrFail($productData['id']);
             $price = $product->price;
             $subtotal = $price * $productData['quantity'];
-            $total += $subtotal;
+            $total_price += $subtotal;
 
             $order->orderItems()->create([
                 'product_id' => $product->id,
                 'quantity' => $productData['quantity'],
-                'price' => $price
+                'price' => $price,
+                'subtotal' => $subtotal,
             ]);
         }
 
         // Update total
-        $order->update(['total' => $total]);
+        $order->update(['total_price' => $total_price]);
 
-        return redirect()->route('admin.orders.index')->with('success', 'Order created successfully.');
+        return redirect()->route('orders.index')->with('success', 'Order created successfully.');
     }
+
 
     /**
      * Show a specific order

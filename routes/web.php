@@ -40,7 +40,15 @@ Route::prefix('admin')->group(function () {
         Route::patch('orders/{order}/status/{status}', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
 
 
-        Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+        
+
+        Route::get('users', [UserController::class, 'index'])->name('admin.users.index');
+        Route::get('users/create', [UserController::class, 'create'])->name('admin.users.create');
+        Route::post('users', [UserController::class, 'store'])->name('admin.users.store');
+        Route::get('users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
+        Route::put('users/{user}', [UserController::class, 'update'])->name('admin.users.update');
+        Route::delete('users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+
         Route::get('/profile', [ProfileController::class, 'index'])->name('admin.profile');
         Route::put('/profile', [ProfileController::class, 'update'])->name('admin.profile.update');
         Route::post('/logout', [AdminLogin::class, 'logout'])->name('admin.logout');

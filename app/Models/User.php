@@ -18,6 +18,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'user_id',
         'name',
         'email',
         'password',
@@ -51,5 +52,15 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            $latest = User::latest('id')->first();
+            $number = $latest ? intval(substr($latest->user_id, 2)) + 1 : 1;
+            $user->user_id = 'U-' . str_pad($number, 4, '0', STR_PAD_LEFT);
+        });
     }
 }
