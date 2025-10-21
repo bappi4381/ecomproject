@@ -3,16 +3,16 @@
 :root {
     --sidebar-width: 280px;
     --sidebar-collapsed-width: 70px;
-    --primary-color: #0d6efd;
-    --secondary-color: #6c757d;
+    --primary-color: #A75E30;        /* changed to your brown */
+    --secondary-color: #ddd8b8 !important;
     --success-color: #198754;
     --warning-color: #ffc107;
     --danger-color: #dc3545;
     --info-color: #0dcaf0;
     --dark-color: #212529;
-    --light-color: #f8f9fa;
-    --sidebar-bg: #2c3e50;
-    --sidebar-hover: #34495e;
+    --light-color: #F3F2EC;          /* changed to your cream */
+    --sidebar-bg: #A75E30;           /* base for sidebar gradient */
+    --sidebar-hover: #B46A3B;        /* slightly lighter than primary for hover */
     --transition-speed: 0.3s;
 }
 
@@ -22,7 +22,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f8f9fa;
+    background-color: var(--light-color);
     margin: 0;
     padding: 0;
     overflow-x: hidden;
@@ -35,15 +35,16 @@ body {
     left: 0;
     height: 100vh;
     width: var(--sidebar-width);
-    background: linear-gradient(135deg, var(--sidebar-bg) 0%, #34495e 100%);
+    /* gradient between your two colors */
+    background: linear-gradient(135deg, var(--sidebar-bg) 0%, var(--light-color) 100%);
     z-index: 1000;
     transition: all var(--transition-speed) ease;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.08);
 }
 
 .sidebar-header {
     padding: 1.5rem 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     text-align: center;
 }
 
@@ -51,6 +52,7 @@ body {
     font-weight: 600;
     font-size: 1.1rem;
     letter-spacing: 0.5px;
+    color: #fff;
 }
 
 .sidebar-nav {
@@ -68,24 +70,27 @@ body {
     display: flex;
     align-items: center;
     padding: 0.875rem 1.5rem;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.9);
     text-decoration: none;
     transition: all var(--transition-speed) ease;
     border-radius: 0;
     position: relative;
     overflow: hidden;
+    background: transparent;
 }
 
 .sidebar-nav .nav-link:hover {
+    /* use a lighter shade from the palette */
     background-color: var(--sidebar-hover);
     color: white;
     transform: translateX(5px);
 }
 
 .sidebar-nav .nav-link.active {
-    background: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%);
-    color: white;
-    box-shadow: 0 2px 10px rgba(13, 110, 253, 0.3);
+    /* active gradient using the two colors */
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--light-color) 100%);
+    color: #fff;
+    box-shadow: 0 2px 12px rgba(167, 94, 48, 0.22);
 }
 
 .sidebar-nav .nav-link.active::before {
@@ -95,7 +100,7 @@ body {
     top: 0;
     height: 100%;
     width: 4px;
-    background: white;
+    background: rgba(255,255,255,0.9);
 }
 
 .sidebar-nav .nav-link i {
@@ -103,6 +108,7 @@ body {
     width: 20px;
     text-align: center;
     margin-right: 0.75rem;
+    color: rgba(255,255,255,0.95);
 }
 
 .nav-text {
@@ -119,8 +125,9 @@ body {
 
 /* Top Navigation */
 .navbar {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
     padding: 0.75rem 1.5rem;
+    background: #fff;
 }
 
 .navbar .input-group-text {
@@ -133,7 +140,8 @@ body {
 
 .navbar .form-control:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    /* subtle glow using primary */
+    box-shadow: 0 0 0 0.15rem rgba(167,94,48,0.15);
 }
 
 /* Main Content */
@@ -146,11 +154,12 @@ body {
     transition: all var(--transition-speed) ease;
     border-radius: 12px;
     overflow: hidden;
+    background: linear-gradient(180deg, #fff 0%, #fbfaf8 100%);
 }
 
 .stat-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12) !important;
 }
 
 .stat-icon {
@@ -161,6 +170,9 @@ body {
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
+    /* subtle background using primary */
+    background: linear-gradient(135deg, rgba(167,94,48,0.12) 0%, rgba(243,242,236,0.12) 100%);
+    color: var(--primary-color);
 }
 
 .stat-number {
@@ -199,21 +211,25 @@ body {
     align-items: center;
     justify-content: center;
     font-size: 1rem;
+    background: rgba(167,94,48,0.06);
+    color: var(--primary-color);
 }
 
 /* Card Enhancements */
 .card {
     border-radius: 12px;
     transition: all var(--transition-speed) ease;
+    background: #fff;
 }
 
 .card:hover {
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08) !important;
 }
 
 .card-header {
     border-radius: 12px 12px 0 0 !important;
     padding: 1.25rem 1.5rem;
+    background: linear-gradient(90deg, rgba(167,94,48,0.06), rgba(243,242,236,0.04));
 }
 
 .card-body {
@@ -226,18 +242,21 @@ body {
     font-weight: 500;
     padding: 0.625rem 1.25rem;
     transition: all var(--transition-speed) ease;
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
 }
 
 .btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 18px rgba(167,94,48,0.18);
 }
 
 /* Dropdown Enhancements */
 .dropdown-menu {
     border-radius: 12px;
     border: none;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
     padding: 0.5rem 0;
 }
 
@@ -263,26 +282,26 @@ body {
 }
 
 .custom-pagination .page-item .page-link {
-    border-radius: 50% !important;
+    /* border-radius: 50% !important; */
     margin: 0 2px;
     padding: 0.4rem 0.75rem;
     color: #555;
     border: none;
-    background: #f8f9fa;
+    background: var(--light-color);
     transition: all 0.3s ease;
 }
 
 .custom-pagination .page-item .page-link:hover {
-    background: #0d6efd;
+    background: var(--primary-color);
     color: #fff;
 }
 
 .custom-pagination .page-item.active .page-link {
-    background: #0d6efd;
-    border-color: #0d6efd;
+    background: var(--primary-color);
+    border-color: var(--primary-color);
     color: #fff;
     font-weight: bold;
-    box-shadow: 0 0 6px rgba(13, 110, 253, 0.5);
+    box-shadow: 0 0 6px rgba(167,94,48,0.35);
 }
 
 .custom-pagination .page-item.disabled .page-link {
@@ -411,7 +430,7 @@ body {
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
+        background-color: rgba(0, 0, 0, 0.45);
         z-index: 999;
         opacity: 0;
         visibility: hidden;
@@ -486,4 +505,3 @@ body {
         padding: 0 !important;
     }
 }
-

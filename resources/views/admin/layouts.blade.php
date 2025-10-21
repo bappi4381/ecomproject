@@ -121,7 +121,7 @@
                 <div class="d-flex align-items-center">
                     {{-- Notifications --}}
                     <div class="dropdown me-3">
-                        <button class="btn btn-outline-secondary position-relative" type="button" data-bs-toggle="dropdown">
+                        <button class="btn position-relative" type="button" data-bs-toggle="dropdown">
                             <i class="bi bi-bell"></i>
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                                 3
@@ -144,7 +144,7 @@
                             $adminName = $admin->name ?? 'Admin';
                         @endphp
 
-                        <button class="btn btn-outline-primary dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
+                        <button class="btn  dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
                             <img src="{{ $avatarUrl }}" class="rounded-circle me-2" alt="User Avatar" width="32" height="32">
                             <span class="d-none d-md-inline">{{ $adminName }}</span>
                         </button>

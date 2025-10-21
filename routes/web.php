@@ -10,12 +10,12 @@ use App\Http\Controllers\Admin\Product\CategoriesController;
 use App\Http\Controllers\Admin\Product\SubcategoryController;
 use App\Http\Controllers\Admin\Product\ProductController;
 use App\Http\Controllers\Admin\Order\OrderController;
+use App\Http\Controllers\Frontend\HomeController;
 
 // User routes
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
-
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/books', [HomeController::class, 'books'])->name('books.index');
+Route::get('/books/{book}', [HomeController::class, 'show'])->name('books.show');
 // Admin auth routes
 Route::prefix('admin')->group(function () {
     Route::get('/login', [AdminLogin::class, 'showLoginForm'])->name('admin.login');
