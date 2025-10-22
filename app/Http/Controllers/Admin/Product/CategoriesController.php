@@ -22,16 +22,19 @@ class CategoriesController extends Controller
         $request->validate([
             'name' => 'required|unique:categories,name',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'type'  => 'required|in:blog,product', 
         ]);
 
         $imagePath = null;
+
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('categories', 'public');
         }
 
         Category::create([
-            'name' => $request->name,
-            'image' => $imagePath,
+            'name'  => $request->name,
+            'type'  => $request->type,
+            'image' => $imagePath, 
         ]);
 
         return back()->with('success', 'Category created successfully.');
@@ -44,5 +47,10 @@ class CategoriesController extends Controller
         $category->delete();
 
         return back()->with('success', 'Category deleted successfully.');
+    }
+    public function getByType($type)
+    {
+        $categories = Category::where('type', $type)->get();
+        return response()->json($categories);
     }
 }

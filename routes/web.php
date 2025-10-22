@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\Product\SubcategoryController;
 use App\Http\Controllers\Admin\Product\ProductController;
 use App\Http\Controllers\Admin\Order\OrderController;
 use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Admin\ArticleController;
 
 // User routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -30,16 +31,15 @@ Route::prefix('admin')->group(function () {
         Route::resource('subcategories', SubcategoryController::class)->only(['store', 'destroy']);
 
         // Add route for getting subcategories (e.g., for AJAX dependent dropdowns)
+        Route::get('/categories/by-type/{type}', [CategoriesController::class, 'getByType'])->name('categories.byType');
         Route::get('get-subcategories', [SubcategoryController::class, 'getSubcategories'])->name('get.subcategories');
-
-
-
+        
         Route::resource('products', ProductController::class);
 
         Route::resource('orders', OrderController::class);
         Route::patch('orders/{order}/status/{status}', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
 
-
+        Route::resource('/articles', ArticleController::class);
         
 
         Route::get('users', [UserController::class, 'index'])->name('admin.users.index');

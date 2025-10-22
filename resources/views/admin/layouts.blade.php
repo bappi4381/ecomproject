@@ -14,6 +14,7 @@
 
     {{-- Custom CSS --}}
     <link href="{{ asset('admin/styles.css') }}" rel="stylesheet">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 </head>
 <body>
     {{-- Sidebar --}}
@@ -52,6 +53,15 @@
                     'title' => 'Users',
                     'icon' => 'bi-people',
                     'route' => 'admin.users.index',
+                ],
+                [
+                    'title' => 'Articles',
+                    'icon' => 'bi-newspaper',
+                    'children' => [
+                        ['title' => 'Article List', 'route' => 'articles.index'],
+                        ['title' => 'Add Article', 'route' => 'articles.create'],
+                    ]
+                    
                 ],
             ];
         @endphp
@@ -180,6 +190,25 @@
     {{-- Bootstrap 5 JS --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const editor = document.getElementById('editor');
+            if(editor){
+                const quill = new Quill('#editor', { theme: 'snow' });
+
+                // If old content exists (edit page)
+                quill.root.innerHTML = `{!! old('content', $article->content ?? '') !!}`;
+
+                // Ensure we target the correct form
+                const form = editor.closest('form');
+                form.addEventListener('submit', function() {
+                    document.getElementById('content').value = quill.root.innerHTML;
+                });
+            }
+        });
+    </script>
     {{-- Custom JS --}}
     {{-- <script src="{{ asset('admin/script.js') }}"></script> --}}
 </body>

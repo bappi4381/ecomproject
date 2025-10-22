@@ -12,7 +12,7 @@
                     <h5 class="mb-3 fw-bold">Filter by Category</h5>
                     <ul class="list-group mb-4">
                         @foreach($categories as $category)
-                            <li class="list-group-item py-2">
+                            <li class="list-group-item py-2 px-3">
                                 <a href="{{ route('books.index', ['category' => $category->id]) }}" class="text-decoration-none text-dark d-block">
                                     {{ $category->name }}
                                 </a>

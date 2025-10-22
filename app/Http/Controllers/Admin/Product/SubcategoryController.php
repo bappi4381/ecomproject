@@ -37,17 +37,26 @@ class SubcategoryController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
+
+    public function getCategoriesByType(Request $request)
+    {
+        $request->validate([
+            'type' => 'required|in:blog,product',
+        ]);
+
+        $categories = Category::where('type', $request->type)->get();
+
+        return response()->json($categories);
+    }
     public function getSubcategories(Request $request)
     {
-        // Validate category ID
         $request->validate([
             'category_id' => 'required|exists:categories,id',
         ]);
 
-        // Get subcategories
         $subcategories = Subcategory::where('category_id', $request->category_id)->get();
 
-        // Return subcategories as JSON
         return response()->json($subcategories);
     }
+
 }

@@ -28,10 +28,24 @@
                 <div class="card-body">
                     <form action="{{ route('categories.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
-                        <div class="mb-3">
-                            <label for="category_name" class="form-label fw-semibold">Category Name</label>
-                            <input type="text" name="name" id="category_name" class="form-control" placeholder="Enter category name" required>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="category_name" class="form-label fw-semibold">Category Name</label>
+                                    <input type="text" name="name" id="category_name" class="form-control" placeholder="Enter category name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="category_description" class="form-label fw-semibold">Category type</label>
+                                    <select name="type" id="category_description" class="form-select" required>
+                                        <option value="product">Product</option>
+                                        <option value="blog">Article</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
+                        
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Category Image</label>
                             <input type="file" name="image" class="form-control" accept="image/*">
@@ -53,19 +67,37 @@
                 <div class="card-body">
                     <form action="{{ route('subcategories.store') }}" method="POST">
                         @csrf
-                        <div class="mb-3">
-                            <label for="category_id" class="form-label fw-semibold">Select Category</label>
-                            <select name="category_id" id="category_id" class="form-select" required>
-                                <option value="">-- Choose Category --</option>
-                                @foreach($categories as $cat)
-                                    <option value="{{ $cat->id }}">{{ $cat->name }}</option>
-                                @endforeach
-                            </select>
+                        <div class="row">
+                            <!-- Step 1: Select Type -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="type" class="form-label fw-semibold">Select Category Type</label>
+                                    <select name="type" id="type" class="form-select" required>
+                                        <option value="">-- Choose Type --</option>
+                                        <option value="blog">Article</option>
+                                        <option value="product">Product</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Select Category (populated dynamically) -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="category_id" class="form-label fw-semibold">Select Category</label>
+                                    <select name="category_id" id="category_id" class="form-select" required>
+                                        <option value="">-- Choose Category --</option>
+                                        <!-- Options will be filled by JS based on type -->
+                                    </select>
+                                </div>
+                            </div>
                         </div>
+
+                        <!-- Step 3: Subcategory Name -->
                         <div class="mb-3">
                             <label for="subcategory_name" class="form-label fw-semibold">Subcategory Name</label>
                             <input type="text" name="name" id="subcategory_name" class="form-control" placeholder="Enter subcategory name" required>
                         </div>
+
                         <button type="submit" class="btn btn-primary px-4">
                             <i class="bi bi-plus-circle me-1"></i> Add Subcategory
                         </button>
@@ -81,19 +113,30 @@
             <i class="bi bi-table me-2"></i> Categories & Subcategories List
         </div>
         <div class="card-body">
-            <table class="table table-bordered table-hover align-middle text-center">
+            <table class="table table-bordered table-hover align-middle ">
                 <thead class="table-primary">
                     <tr>
                         <th style="width: 20%">Category</th>
+                        <th style="width: 20%">CategoryType</th>
                         <th style="width: 20%">Image</th>
-                        <th style="width: 40%">Subcategories</th>
-                        <th style="width: 20%">Actions</th>
+                        <th style="width: 30%">Subcategories</th>
+                        <th class="text-center" style="width: 10%">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($categories as $category)
                         <tr>
-                            <td class="fw-semibold">{{ $category->name }}</td>
+                            <td class="text-start fw-semibold">{{ $category->name }}</td>
+                            @php
+                                $typeNames = [
+                                    'product' => 'Product',
+                                    'blog' => 'Article',
+                                ];
+                            @endphp
+
+                            <td class="fw-semibold">
+                                {{ $typeNames[$category->type] ?? $category->type }}
+                            </td>
                             <td>
                                 @if($category->image)
                                     <img src="{{ asset('storage/' . $category->image) }}" 
@@ -131,7 +174,7 @@
                                     <em class="text-muted">No subcategories</em>
                                 @endif
                             </td>
-                            <td>
+                            <td class="text-center" >
                                 <form action="{{ route('categories.destroy', $category->id) }}" method="POST" class="d-inline">
                                     @csrf @method('DELETE')
                                     <button type="submit" 
@@ -153,6 +196,37 @@
     </div>
 </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const typeSelect = document.getElementById('type');
+        const categorySelect = document.getElementById('category_id');
+
+        typeSelect.addEventListener('change', function () {
+            const selectedType = this.value;
+            categorySelect.innerHTML = '<option value="">Loading...</option>';
+
+            if(selectedType) {
+                fetch(`/admin/categories/by-type/${selectedType}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        categorySelect.innerHTML = '<option value="">-- Choose Category --</option>';
+                        data.forEach(cat => {
+                            const option = document.createElement('option');
+                            option.value = cat.id;
+                            option.textContent = cat.name;
+                            categorySelect.appendChild(option);
+                        });
+                    })
+                    .catch(err => {
+                        categorySelect.innerHTML = '<option value="">Error loading categories</option>';
+                        console.error(err);
+                    });
+            } else {
+                categorySelect.innerHTML = '<option value="">-- Choose Category --</option>';
+            }
+        });
+    });
+</script>
 {{-- Optional: subtle hover animation for buttons --}}
 <style>
     .btn-primary {

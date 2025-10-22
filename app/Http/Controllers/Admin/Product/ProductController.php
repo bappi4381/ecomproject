@@ -31,7 +31,7 @@ class ProductController extends Controller
 
     public function create(Request $request)
     {
-        $categories = Category::all();
+        $categories = Category::where('type', 'product')->get();
         $selectedCategory = $request->input('category_id');
         $subcategories = $selectedCategory
             ? Subcategory::where('category_id', $selectedCategory)->get()

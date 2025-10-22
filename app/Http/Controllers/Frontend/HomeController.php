@@ -15,7 +15,7 @@ class HomeController extends Controller
     }
     public function books(Request $request)
     {
-        $categories = Category::all();
+        $categories = Category::where('type', 'product')->get();
 
         $books = Product::query();
 
