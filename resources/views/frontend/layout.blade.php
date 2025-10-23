@@ -96,8 +96,8 @@
 									<li class="menu-item {{ request()->routeIs('books.index') ? 'active' : '' }}">
 										<a href="{{ route('books.index') }}" class="nav-link">Books</a>
 									</li>
-									<li class="menu-item">
-										<a href="#" class="nav-link">Articles</a>
+									<li class="menu-item {{ request()->routeIs('frontend.articles') ? 'active' : '' }}">
+										<a href="{{ route('frontend.articles') }}" class="nav-link">Articles</a>
 									</li>
 								</ul>
 

@@ -35,11 +35,6 @@ class Product extends Model
     {
         return $this->belongsTo(Subcategory::class);
     }
-
-    public function sizes()
-    {
-        return $this->hasMany(ProductSize::class);
-    }
     public function images()
     {
         return $this->hasMany(ProductImage::class);

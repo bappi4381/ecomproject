@@ -59,7 +59,14 @@
                         <label class="form-label fw-semibold">Slug</label>
                         <input type="text" name="slug" class="form-control" value="{{ old('slug', $article->slug) }}">
                     </div>
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-semibold">Status</label>
+                        <select name="status" class="form-select">
+                            <option value="draft" {{ old('status', $article->status) == 'draft' ? 'selected' : '' }}>Draft</option>
+                            <option value="published" {{ old('status', $article->status) == 'published' ? 'selected' : '' }}>Published</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
                         <label class="form-label fw-semibold">Publish Date</label>
                         <input type="date" name="published_at" class="form-control" value="{{ old('published_at', $article->published_at ? $article->published_at->format('Y-m-d') : '') }}">
                     </div>

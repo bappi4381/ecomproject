@@ -67,67 +67,22 @@
 
 					<div class="product-list" data-aos="fade-up">
 						<div class="row">
-
-							<div class="col-md-3">
-								<div class="product-item">
-									<figure class="product-style">
-										<img src="{{ asset('frontend') }}/images/product-item1.jpg" alt="Books" class="product-item">
-										<button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
-											Cart</button>
-									</figure>
-									<figcaption>
-										<h3>Simple way of piece life</h3>
-										<span>Armor Ramsey</span>
-										<div class="item-price">$ 40.00</div>
-									</figcaption>
+							@foreach ($products as $product )
+								<div class="col-md-3">
+									<div class="product-item">
+										<figure class="product-style">
+											<img src="{{ $product->images->first() ? asset('storage/' . $product->images->first()->image) : asset('frontend/images/default-book.jpg') }}" alt="Books" class="product-item">
+											<button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
+												Cart</button>
+										</figure>
+										<figcaption>
+											<h3>{{ $product->name }}</h3>
+											<span>{{ $product->author }}</span>
+											<div class="item-price">tk. {{ $product->price }}</div>
+										</figcaption>
+									</div>
 								</div>
-							</div>
-
-							<div class="col-md-3">
-								<div class="product-item">
-									<figure class="product-style">
-										<img src="{{ asset('frontend') }}/images/product-item2.jpg" alt="Books" class="product-item">
-										<button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
-											Cart</button>
-									</figure>
-									<figcaption>
-										<h3>Great travel at desert</h3>
-										<span>Sanchit Howdy</span>
-										<div class="item-price">$ 38.00</div>
-									</figcaption>
-								</div>
-							</div>
-
-							<div class="col-md-3">
-								<div class="product-item">
-									<figure class="product-style">
-										<img src="{{ asset('frontend') }}/images/product-item3.jpg" alt="Books" class="product-item">
-										<button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
-											Cart</button>
-									</figure>
-									<figcaption>
-										<h3>The lady beauty Scarlett</h3>
-										<span>Arthur Doyle</span>
-										<div class="item-price">$ 45.00</div>
-									</figcaption>
-								</div>
-							</div>
-
-							<div class="col-md-3">
-								<div class="product-item">
-									<figure class="product-style">
-										<img src="{{ asset('frontend') }}/images/product-item4.jpg" alt="Books" class="product-item">
-										<button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
-											Cart</button>
-									</figure>
-									<figcaption>
-										<h3>Once upon a time</h3>
-										<span>Klien Marry</span>
-										<div class="item-price">$ 35.00</div>
-									</figcaption>
-								</div>
-							</div>
-
+							@endforeach
 						</div><!--ft-books-slider-->
 					</div><!--grid-->
 
@@ -139,7 +94,7 @@
 				<div class="col-md-12">
 
 					<div class="btn-wrap align-right">
-						<a href="#" class="btn-accent-arrow">View all products <i
+						<a href="{{ route('books.index') }}" class="btn-accent-arrow">View all products <i
 								class="icon icon-ns-arrow-right"></i></a>
 					</div>
 
@@ -161,78 +116,23 @@
 				<div class="inner-content">
 					<div class="product-list" data-aos="fade-up">
 						<div class="grid product-grid">
-							<div class="product-item">
-								<figure class="product-style">
-									<img src="{{ asset('frontend') }}/images/product-item5.jpg" alt="Books" class="product-item">
-									<button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
-										Cart</button>
-								</figure>
-								<figcaption>
-									<h3>Simple way of piece life</h3>
-									<span>Armor Ramsey</span>
-									<div class="item-price">
-										<span class="prev-price">$ 50.00</span>$ 40.00
-									</div>
+							@foreach ($discountedProducts as $discountedProduct )
+								<div class="product-item">
+									<figure class="product-style">
+										<img src="{{ $discountedProduct->images->first() ? asset('storage/' . $discountedProduct->images->first()->image) : asset('frontend/images/default-book.jpg') }}" alt="Books" class="product-item">
+										<button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
+											Cart</button>
+									</figure>
+									<figcaption>
+										<h3>{{ $discountedProduct->name }}</h3>
+										<span>{{ $discountedProduct->author }}</span>
+										<div class="item-price">
+											<span class="prev-price">tk.{{ $discountedProduct->price }}</span>
+											tk. {{ $discountedProduct->discounted_price }}
+										</div>
+									</figcaption>
 								</div>
-							</figcaption>
-
-							<div class="product-item">
-								<figure class="product-style">
-									<img src="{{ asset('frontend') }}/images/product-item6.jpg" alt="Books" class="product-item">
-									<button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
-										Cart</button>
-								</figure>
-								<figcaption>
-									<h3>Great travel at desert</h3>
-									<span>Sanchit Howdy</span>
-									<div class="item-price">
-										<span class="prev-price">$ 30.00</span>$ 38.00
-									</div>
-								</div>
-							</figcaption>
-
-							<div class="product-item">
-								<figure class="product-style">
-									<img src="{{ asset('frontend') }}/images/product-item7.jpg" alt="Books" class="product-item">
-									<button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
-										Cart</button>
-								</figure>
-								<figcaption>
-									<h3>The lady beauty Scarlett</h3>
-									<span>Arthur Doyle</span>
-									<div class="item-price">
-										<span class="prev-price">$ 35.00</span>$ 45.00
-									</div>
-								</div>
-							</figcaption>
-
-							<div class="product-item">
-								<figure class="product-style">
-									<img src="{{ asset('frontend') }}/images/product-item8.jpg" alt="Books" class="product-item">
-									<button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
-										Cart</button>
-								</figure>
-								<figcaption>
-									<h3>Once upon a time</h3>
-									<span>Klien Marry</span>
-									<div class="item-price">
-										<span class="prev-price">$ 25.00</span>$ 35.00
-									</div>
-								</div>
-							</figcaption>
-
-							<div class="product-item">
-								<figure class="product-style">
-									<img src="{{ asset('frontend') }}/images/product-item2.jpg" alt="Books" class="product-item">
-									<button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
-										Cart</button>
-								</figure>
-								<figcaption>
-									<h3>Simple way of piece life</h3>
-									<span>Armor Ramsey</span>
-									<div class="item-price">$ 40.00</div>
-								</figcaption>
-							</div>
+							@endforeach
 						</div><!--grid-->
 					</div>
 				</div><!--inner-content-->

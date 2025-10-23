@@ -101,10 +101,10 @@ class ArticleController extends Controller
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('articles', 'public');
         }
-        dd($validated);
+        // dd($validated);
         $article->update($validated);
 
-        return redirect()->route('articles.index')->with('success', '✅ Article updated successfully!');
+        return redirect()->route('articles.index')->with('success', 'Article updated successfully!');
     }
 
     /**

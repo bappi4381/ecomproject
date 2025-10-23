@@ -59,9 +59,18 @@
 
                 <div class="row">
                     {{-- Publish Date --}}
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-3 mb-3">
                         <label class="form-label fw-semibold">Publish Date</label>
                         <input type="date" name="published_at" class="form-control" value="{{ old('published_at') }}">
+                    </div>
+
+                    {{-- Status --}}
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-semibold">Status</label>
+                        <select name="status" class="form-select">
+                            <option value="draft" {{ old('status') == 'draft' ? 'selected' : '' }}>Draft</option>
+                            <option value="published" {{ old('status') == 'published' ? 'selected' : '' }}>Published</option>
+                        </select>
                     </div>
 
                     {{-- Slug --}}
@@ -94,19 +103,7 @@
         </button>
     </form>
 </div>
-
-{{-- ✅ Include Quill --}}
-<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
-
 <script>
-    // ✅ Initialize Quill Editor
-    const quill = new Quill('#editor', { theme: 'snow' });
-
-    // ✅ Save content before form submit
-    document.querySelector('form').addEventListener('submit', function() {
-        document.querySelector('#content').value = quill.root.innerHTML;
-    });
 
     // ✅ Auto Slug Generation
     document.getElementById('title').addEventListener('input', function() {

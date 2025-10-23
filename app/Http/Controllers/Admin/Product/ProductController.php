@@ -89,11 +89,16 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        $categories = Category::all();
+        // Get all categories for the dropdown
+        $categories = Category::where('type', 'product')->get();
+
+        // Get subcategories for the selected category
         $subcategories = Subcategory::where('category_id', $product->category_id)->get();
-        $product->load(['sizes', 'images']);
 
+        // Load relations (category, subcategory, images)
+        $product->load(['category', 'subcategory', 'images']);
 
+        // Pass data to the create/edit view
         return view('admin.product.create', compact('product', 'categories', 'subcategories'));
     }
 
@@ -153,8 +158,8 @@ class ProductController extends Controller
                 Storage::disk('public')->delete($img->image);
                 $img->delete();
             }
-            // Delete sizes & product
-            $product->sizes()->delete();
+
+            // Delete the product
             $product->delete();
         });
 

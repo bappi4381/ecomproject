@@ -55,7 +55,18 @@
                                 <figcaption>
 									<h3>{{ $book->name }}</h3>
 									<span>{{ $book->author }}</span>
-									<div class="item-price">tk. {{ $book->price }}</div>
+                                     @if ($book->discount != null && $book->discount != 0)
+                                        <span class="badge bg-danger" style="top:10px; right:10px;">
+                                            {{ intval($book->discount) }}%
+                                        </span>
+                                        <div class="item-price">
+                                            <span class="prev-price">tk.{{ $book->price }}</span>
+                                            tk. {{ $book->discounted_price }}
+                                        </div>
+                                    @else
+                                        
+                                        <div class="item-price">tk. {{ $book->price }}</div>
+                                    @endif
 								</figcaption>
                             </div>
                         </div>

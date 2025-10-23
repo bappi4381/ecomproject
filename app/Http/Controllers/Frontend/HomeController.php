@@ -11,7 +11,20 @@ class HomeController extends Controller
 {
     public function index()
     {
-        return view('frontend.pages.home');
+        // Get latest 4 non-discounted products
+         $products = Product::where(function ($query) {
+                $query->where('discount', 0)
+                    ->orWhereNull('discount');
+            })
+            ->with('images')
+            ->latest()
+            ->take(4)
+            ->get();
+        // Get latest 4 discounted products
+        $discountedProducts = Product::where('discount', '>', 0)->with('images')->latest()->take(4)->get();
+
+        // Pass both to the view
+        return view('frontend.pages.home', compact('products', 'discountedProducts'));
     }
     public function books(Request $request)
     {
@@ -40,4 +53,5 @@ class HomeController extends Controller
         $book = Product::with('images', 'category')->findOrFail($id);
         return view('frontend.pages.singleBook', compact('book'));
     }
+    
 }

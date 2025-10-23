@@ -194,21 +194,25 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const editor = document.getElementById('editor');
-            if(editor){
+            const editorElement = document.getElementById('editor');
+
+            if (editorElement && !editorElement.classList.contains('quill-initialized')) {
+                
+                editorElement.classList.add('quill-initialized'); // Prevent double init
+
                 const quill = new Quill('#editor', { theme: 'snow' });
 
-                // If old content exists (edit page)
+                // Load old content only once
                 quill.root.innerHTML = `{!! old('content', $article->content ?? '') !!}`;
 
-                // Ensure we target the correct form
-                const form = editor.closest('form');
+                const form = editorElement.closest('form');
                 form.addEventListener('submit', function() {
                     document.getElementById('content').value = quill.root.innerHTML;
                 });
             }
         });
     </script>
+
     {{-- Custom JS --}}
     {{-- <script src="{{ asset('admin/script.js') }}"></script> --}}
 </body>
