@@ -71,9 +71,17 @@
 								<div class="col-md-3">
 									<div class="product-item">
 										<figure class="product-style">
-											<img src="{{ $product->images->first() ? asset('storage/' . $product->images->first()->image) : asset('frontend/images/default-book.jpg') }}" alt="Books" class="product-item">
-											<button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
-												Cart</button>
+											<a href="{{ route('books.show', $product->id) }}">
+												<img src="{{ $product->images->first() ? asset('storage/' . $product->images->first()->image) : asset('frontend/images/default-book.jpg') }}" alt="Books" class="product-item">
+											</a>
+											<form action="{{ route('cart.add') }}" method="POST" class="d-inline">
+												@csrf
+												<input type="hidden" name="product_id" value="{{ $product->id }}">
+												<button type="button" class="add-to-cart" data-product-tile="add-to-cart" onclick="this.closest('form').submit();">
+													Add to Cart
+												</button>
+											</form>
+
 										</figure>
 										<figcaption>
 											<h3>{{ $product->name }}</h3>
@@ -118,13 +126,25 @@
 						<div class="grid product-grid">
 							@foreach ($discountedProducts as $discountedProduct )
 								<div class="product-item">
+									 
 									<figure class="product-style">
-										<img src="{{ $discountedProduct->images->first() ? asset('storage/' . $discountedProduct->images->first()->image) : asset('frontend/images/default-book.jpg') }}" alt="Books" class="product-item">
-										<button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
-											Cart</button>
+										<a href="{{ route('books.show', $discountedProduct->id) }}">
+											<img src="{{ $discountedProduct->images->first() ? asset('storage/' . $discountedProduct->images->first()->image) : asset('frontend/images/default-book.jpg') }}" alt="Books" class="product-item">
+                                    	</a>
+										<form action="{{ route('cart.add') }}" method="POST" class="d-inline">
+											@csrf
+											<input type="hidden" name="product_id" value="{{ $discountedProduct->id }}">
+											<button type="button" class="add-to-cart" data-product-tile="add-to-cart" onclick="this.closest('form').submit();">
+												Add to Cart
+											</button>
+										</form>
+											
 									</figure>
 									<figcaption>
-										<h3>{{ $discountedProduct->name }}</h3>
+										<h3>
+											{{ $discountedProduct->name }}
+											<span class="badge bg-danger fs-6">{{ intval($discountedProduct->discount) }}% OFF</span>
+										</h3>
 										<span>{{ $discountedProduct->author }}</span>
 										<div class="item-price">
 											<span class="prev-price">tk.{{ $discountedProduct->price }}</span>

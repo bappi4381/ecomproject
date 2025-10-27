@@ -1,0 +1,35 @@
+/* Table Hover */
+.table-hover tbody tr:hover {
+    background-color: #f1f3f5;
+    transition: background 0.2s;
+}
+
+/* Buttons */
+.action-btn {
+    border-radius: 50px;
+    min-width: 180px;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.action-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Table Responsive */
+.table-responsive {
+    overflow-x: auto;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+    .action-btn {
+        min-width: 140px;
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
+}

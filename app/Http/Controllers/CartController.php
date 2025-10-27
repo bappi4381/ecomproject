@@ -10,27 +10,32 @@ class CartController extends Controller
     public function index()
     {
         $cart = session()->get('cart', []);
-        return view('cart.index', compact('cart'));
+        $total = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
+        return view('frontend.cart.index', compact('cart', 'total'));
     }
 
     public function add(Request $request)
     {
-        $product = Product::findOrFail($request->product_id);
+        $product = Product::with('images')->findOrFail($request->product_id);
         $cart = session()->get('cart', []);
 
         if (isset($cart[$product->id])) {
             $cart[$product->id]['quantity']++;
         } else {
+            $price = $product->discounted_price ?? $product->price;
+
+            $image = $product->images->first()->image ?? 'frontend/images/default-book.jpg';
+
             $cart[$product->id] = [
-                'name' => $product->name,
+                'name'     => $product->name,
                 'quantity' => 1,
-                'price' => $product->price,
-                'image' => $product->image,
+                'price'    => $price,
+                'image'    => $image,
             ];
         }
 
         session()->put('cart', $cart);
-        return redirect()->route('cart.index')->with('success', 'Product added to cart!');
+        return redirect()->back();
     }
 
     public function remove($id)
@@ -50,7 +55,8 @@ class CartController extends Controller
         $cart = session()->get('cart', []);
 
         if (isset($cart[$id])) {
-            $cart[$id]['quantity'] = $request->quantity;
+            $quantity = max(1, intval($request->quantity)); // prevent 0 quantity
+            $cart[$id]['quantity'] = $quantity;
             session()->put('cart', $cart);
         }
 

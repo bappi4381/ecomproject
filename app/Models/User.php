@@ -19,6 +19,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'user_id',
+        'avatar',
         'name',
         'email',
         'password',
@@ -62,5 +63,9 @@ class User extends Authenticatable
             $number = $latest ? intval(substr($latest->user_id, 2)) + 1 : 1;
             $user->user_id = 'U-' . str_pad($number, 4, '0', STR_PAD_LEFT);
         });
+    }
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
     }
 }

@@ -48,9 +48,13 @@
                                     <a href="{{ route('books.show', $book->id) }}">
                                         <img src="{{ asset('storage/' . $book->images->first()->image) }}" class="product-item" alt="{{ $book->title }}">
                                     </a>
-                                    <button type="button"  class="add-to-cart" data-product-tile="add-to-cart">
-                                        Add to Cart
-                                    </button>
+                                    <form action="{{ route('cart.add') }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <input type="hidden" name="product_id" value="{{ $book->id }}">
+                                        <button type="button" class="add-to-cart" data-product-tile="add-to-cart" onclick="this.closest('form').submit();">
+                                            Add to Cart
+                                        </button>
+                                    </form>
                                 </figure>
                                 <figcaption>
 									<h3>{{ $book->name }}</h3>

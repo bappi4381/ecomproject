@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id(); // Big integer, auto increment, primary key
             $table->string('user_id')->unique();
             $table->string('name', 100);
+            $table->string('avatar', 100)->nullable();
             $table->string('email', 150)->unique();
             $table->string('password');
             $table->string('phone', 20)->nullable();

@@ -15,10 +15,15 @@
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
 		integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
 
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+
 	<link rel="stylesheet" type="text/css" href="{{ asset('frontend') }}/css/normalize.css">
 	<link rel="stylesheet" type="text/css" href="{{ asset('frontend') }}/css/icomoon/icomoon.css">
 	<link rel="stylesheet" type="text/css" href="{{ asset('frontend') }}/css/vendor.css">
 	<link rel="stylesheet" type="text/css" href="{{ asset('frontend') }}/css/style.css">
+	<link rel="stylesheet" type="text/css" href="{{ asset('frontend') }}/css/custom.css">
 
 </head>
 
@@ -49,11 +54,53 @@
 					</div>
 					<div class="col-md-6">
 						<div class="right-element">
-							<a href="#" class="user-account for-buy"><i
-									class="icon icon-user"></i><span>Account</span></a>
-							<a href="#" class="cart for-buy"><i class="icon icon-clipboard"></i><span>Cart:(0
-									$)</span></a>
+							<a href="#" class="user-account for-buy dropdown-toggle" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+								<i class="icon icon-user"></i>
+								<span>
+									@auth
+										{{ auth()->user()->name }}
+									@else
+										Account
+									@endauth
+								</span>
+							</a>
 
+							<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+								@auth
+									<li>
+										<a class="dropdown-item" href="{{ route('user.dashboard') }}">My Dashboard</a>
+									</li>
+									
+									<li>
+										<form action="{{ route('auth.logout') }}" method="POST" class="d-inline">
+											@csrf
+											<button class="dropdown-item" type="submit">Logout</button>
+										</form>
+									</li>
+								@else
+									<li>
+										<a class="dropdown-item" href="{{ route('user.auth.login') }}">Login</a>
+									</li>
+									<li>
+										<a class="dropdown-item" href="{{ route('user.auth.register') }}">Register</a>
+									</li>
+								@endauth
+							</ul>
+
+							@php
+								$cart = session()->get('cart', []);
+								$cartCount = collect($cart)->sum('quantity');
+								$cartTotal = collect($cart)->sum(function ($item) {
+									return $item['price'] * $item['quantity'];
+								});
+							@endphp
+
+							<a href="{{ route('cart.index') }}" class="cart for-buy text-decoration-none text-dark">
+								<i class="icon icon-clipboard"></i>
+								<span>
+									Cart: ({{ $cartCount }} items — {{ number_format($cartTotal, 2) }} Tk)
+								</span>
+							</a>
 							<div class="action-menu">
 
 								<div class="search-bar">

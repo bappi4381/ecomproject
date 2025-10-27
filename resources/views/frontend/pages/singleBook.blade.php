@@ -34,15 +34,26 @@
                 </p>
 
                 <div class="mt-4 d-flex flex-wrap gap-3">
-                    <a href="#" class="btn btn-warning px-4 py-2 fw-semibold text-white shadow-sm d-inline-flex align-items-center" style="border-radius: 50px;">
-                        <i class="bi bi-cart-plus me-2"></i> Add to Cart
-                    </a>
 
-                    <a href="{{ route('books.index') }}" 
-                    class="btn btn-warning px-4 py-2 fw-semibold text-white shadow-sm d-inline-flex align-items-center" 
-                    style="border-radius: 50px;">
-                        <i class="bi bi-arrow-left me-2"></i> Back to Books
-                    </a>
+                    <!-- Add to Cart Button -->
+                    <form action="{{ route('cart.add') }}" method="POST" class="d-inline">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{ $book->id }}">
+                        <button type="submit"
+                                class="btn btn-primary d-inline-flex align-items-center justify-content-center px-4 py-2 fw-semibold text-white shadow-sm action-btn">
+                                 Add to Cart
+                        </button>
+                    </form>
+
+                    <!-- Back Button -->
+                    <form action="{{ route('books.index') }}" method="GET" class="d-inline">
+                        @csrf
+                        <button type="submit"
+                                class="btn btn-outline-primary d-inline-flex align-items-center justify-content-center px-4 py-2 fw-semibold shadow-sm action-btn">
+                                 Back to Books
+                        </button>
+                    </form>
+                    
                 </div>
             </div>
         </div>
@@ -65,3 +76,17 @@
     </div>
 </section>
 @endsection
+
+{{-- <style>
+    .action-btn {
+        min-width: 180px;             /* Same width for both buttons */
+        font-weight: 600;             /* Bold text */
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    /* Hover effect */
+    .action-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    } 
+</style> --}}
