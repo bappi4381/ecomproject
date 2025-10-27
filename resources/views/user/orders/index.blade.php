@@ -27,9 +27,15 @@
                 <tbody>
                     @foreach($orders as $order)
                         <tr>
+<<<<<<< HEAD
                             <td>{{ $order->id }}</td>
                             <td>{{ $order->created_at->format('d M, Y') }}</td>
                             <td>${{ number_format($order->total_amount, 2) }}</td>
+=======
+                            <td>{{ $order->order_id }}</td>
+                            <td>{{ $order->created_at->format('d M, Y') }}</td>
+                            <td>tk. {{ number_format($order->total_price, 2) }}</td>
+>>>>>>> 1c7acc2 (order details)
                             <td>
                                 @php
                                     $statusClass = match($order->status) {
