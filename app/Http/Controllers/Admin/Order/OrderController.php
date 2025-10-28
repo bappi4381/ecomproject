@@ -3,96 +3,145 @@
 namespace App\Http\Controllers\Admin\Order;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Order;
-use App\Models\Product;
+use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Product;
+use App\Models\OrderItem;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class OrderController extends Controller
 {
-    /**
-     * Display a listing of orders
-     */
     public function index()
     {
-        $orders = Order::with(['user', 'orderItems.product'])->latest()->paginate(10);
+        $orders = Order::with('user')->latest()->paginate(10);
         return view('admin.orders.index', compact('orders'));
     }
-
-    /**
-     * Show form for creating an order manually
-     */
     public function create()
     {
+        $users = User::select('id', 'name', 'email')->get();
         $products = Product::all();
-        $users  = user::all();
-        return view('admin.orders.create', compact('products','users'));
+        return view('admin.orders.create', compact('users', 'products'));
     }
 
-    /**
-     * Store a newly created order
-     */
-     public function store(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'products' => 'required|array',
-            'products.*.id' => 'required|exists:products,id',
-            'products.*.quantity' => 'required|integer|min:1',
+            'email' => 'required|email',
+            'name' => 'required|string|max:100',
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:500',
+            'products' => 'required|array|min:1',
+            'products.*' => 'exists:products,id',
+            'payment_method' => 'required|in:cod,online',
         ]);
 
-        // Create Order
-        $order = Order::create([
-            'user_id' => $request->user_id,
-            'status' => 'pending',
-            'total_price' => 0 // will update later
-        ]);
+        // 1️⃣ User check or create
+        $password = null;
+        $user = User::where('email', $request->email)->first();
 
-        $total_price = 0;
-
-        // Add Products to Order
-        foreach ($request->products as $productData) {
-            $product = Product::findOrFail($productData['id']);
-            $price = $product->price;
-            $subtotal = $price * $productData['quantity'];
-            $total_price += $subtotal;
-
-            $order->orderItems()->create([
-                'product_id' => $product->id,
-                'quantity' => $productData['quantity'],
-                'price' => $price,
-                'subtotal' => $subtotal,
+        if (!$user) {
+            $password = uniqid('pass_');
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'address' => $request->address,
+                'password' => Hash::make($password),
             ]);
         }
 
-        // Update total
-        $order->update(['total_price' => $total_price]);
+        // 2️⃣ Calculate total price
+        $totalPrice = 0;
+        foreach ($request->products as $productId) {
+            $product = Product::findOrFail($productId);
+            $totalPrice += $product->price;
+        }
 
-        return redirect()->route('orders.index')->with('success', 'Order created successfully.');
+        // 3️⃣ Create unique order ID
+        $orderId = 'ORD' . strtoupper(uniqid());
+
+        // 4️⃣ Create Order
+        $order = Order::create([
+            'order_id' => $orderId,
+            'user_id' => $user->id,
+            'total_price' => $totalPrice,
+            'status' => $request->payment_method == 'cod' ? 'pending' : 'processing',
+        ]);
+
+        // 5️⃣ Create Order Items
+        foreach ($request->products as $productId) {
+            $product = Product::findOrFail($productId);
+            OrderItem::create([
+                'order_id' => $order->id,
+                'product_id' => $product->id,
+                'quantity' => 1,
+                'price' => $product->price,
+                'subtotal' => $product->price,
+            ]);
+        }
+
+        // 6️⃣ Send email (same structure as user panel)
+        Mail::send('emails.order_confirmation', [
+            'name' => $user->name,
+            'order_id' => $order->order_id,
+            'total' => $totalPrice,
+            'password' => $password,
+            'payment_method' => $request->payment_method,
+        ], function ($message) use ($user) {
+            $message->to($user->email, $user->name)->subject('Order Confirmation - BookSaw');
+        });
+
+        return redirect()->route('orders.index')->with('success', 'Order created successfully for ' . $user->name . '!');
     }
-
-
-    /**
-     * Show a specific order
-     */
-    public function show($id)
+    public function show(Order $order)
     {
-        $order = Order::with(['customer', 'orderItems.product'])->findOrFail($id);
+        $order->load('orderItems.product', 'user');
         return view('admin.orders.show', compact('order'));
     }
 
-    /**
-     * Update order status
-     */
-    public function updateStatus(Request $request, $id)
+    public function updateStatus(Order $order, $status)
     {
-        $request->validate([
-            'status' => 'required|in:pending,processing,completed,cancelled'
-        ]);
+        if (!in_array($status, ['pending', 'processing', 'completed', 'cancelled'])) {
+            return redirect()->back()->with('error', 'Invalid status!');
+        }
 
+        $order->update(['status' => $status]);
+        return redirect()->back()->with('success', 'Order status updated successfully!');
+    }
+
+    public function destroy(Order $order)
+    {
+        $order->delete();
+        return redirect()->route('orders.index')->with('success', 'Order deleted successfully!');
+    }
+    public function generateInvoice($id)
+    {
+        $order = Order::with(['user', 'orderItems.product'])->findOrFail($id);
+
+        $pdf = Pdf::loadView('admin.orders.invoice', compact('order'));
+
+        // save PDF
+        $fileName = 'invoice_'.$order->id.'.pdf';
+        $path = 'invoices/'.$fileName;
+        Storage::disk('public')->put($path, $pdf->output());
+
+        $order->invoice_path = $path;
+        $order->save();
+
+        return redirect()->back()->with('success', 'Invoice generated successfully!');
+    }
+
+    public function downloadInvoice($id)
+    {
         $order = Order::findOrFail($id);
-        $order->update(['status' => $request->status]);
+        if (!$order->invoice_path || !Storage::disk('public')->exists($order->invoice_path)) {
+            return redirect()->back()->with('error', 'Invoice not found!');
+        }
 
-        return back()->with('success', 'Order status updated successfully.');
+        return response()->download(storage_path('app/public/' . $order->invoice_path));
     }
 }

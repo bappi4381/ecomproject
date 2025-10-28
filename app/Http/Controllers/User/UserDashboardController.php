@@ -7,20 +7,14 @@ use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
-<<<<<<< HEAD
-=======
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests; 
 
->>>>>>> 1c7acc2 (order details)
 
 use Illuminate\Http\Request;
 
 class UserDashboardController extends Controller
 {
-<<<<<<< HEAD
-=======
     use AuthorizesRequests;
->>>>>>> 1c7acc2 (order details)
     public function userDashboard() {
         return view('user.dashboard.index');
     }
@@ -46,6 +40,7 @@ class UserDashboardController extends Controller
             'is_email_verified' => 'sometimes|boolean',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'password' => 'nullable|string|min:6|confirmed',
+            
         ]);
 
         // Update user fields
@@ -93,9 +88,16 @@ class UserDashboardController extends Controller
         return view('user.orders.details', compact('order'));
     }
 
-    public function cancelOrder(Order $order) {
-        $this->authorize('update', $order);
+    public function cancelOrder(Order $order)
+    {
+        $this->authorize('update', $order); // make sure policy exists
+
+        if ($order->status === 'cancelled') {
+            return redirect()->back()->with('info', 'Order is already cancelled.');
+        }
+
         $order->update(['status' => 'cancelled']);
+
         return redirect()->back()->with('success', 'Order cancelled successfully!');
     }
 

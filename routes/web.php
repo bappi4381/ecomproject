@@ -36,6 +36,8 @@ Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.
 Route::get('/checkout', [CheckoutController::class, 'checkoutIndex'])->name('checkout.index');
 Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('checkout.placeOrder');
 
+Route::get('/orders/success/{order}', [CheckoutController::class, 'success'])->name('orders.success');
+
 Route::get('/login', [AuthController::class, 'showAccountPage'])->name('user.auth.login');
 Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('user.auth.register');
@@ -79,16 +81,14 @@ Route::prefix('admin')->group(function () {
 
         Route::resource('orders', OrderController::class);
         Route::patch('orders/{order}/status/{status}', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+        Route::get('/orders/{id}/generate-invoice', [OrderController::class, 'generateInvoice'])->name('admin.orders.invoice.generate');
+        Route::get('/orders/{id}/download-invoice', [OrderController::class, 'downloadInvoice'])->name('admin.orders.invoice.download');
 
         Route::resource('/articles', ArticleController::class);
         
 
-        Route::get('users', [UserController::class, 'index'])->name('admin.users.index');
-        Route::get('users/create', [UserController::class, 'create'])->name('admin.users.create');
-        Route::post('users', [UserController::class, 'store'])->name('admin.users.store');
-        Route::get('users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
-        Route::put('users/{user}', [UserController::class, 'update'])->name('admin.users.update');
-        Route::delete('users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+        Route::resource('users', UserController::class);
+        Route::get('users/{user}/orders', [UserController::class, 'orders'])->name('users.orders');
 
         Route::get('/profile', [ProfileController::class, 'index'])->name('admin.profile');
         Route::put('/profile', [ProfileController::class, 'update'])->name('admin.profile.update');

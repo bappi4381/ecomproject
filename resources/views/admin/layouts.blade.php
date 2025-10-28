@@ -37,6 +37,14 @@
                     'route' => 'admin.dashboard',
                 ],
                 [
+                    'title' => 'Users',
+                    'icon' => 'bi-people',
+                    'children' => [
+                        ['title' => 'User List', 'route' => 'users.index'],
+                        ['title' => 'Add User', 'route' => 'users.create'],
+                    ],
+                ],
+                [
                     'title' => 'Category & Subcategory',
                     'icon' => 'bi-people',
                     'route' => 'category_subcategory.index',
@@ -50,9 +58,12 @@
                     ],
                 ],
                 [
-                    'title' => 'Users',
-                    'icon' => 'bi-people',
-                    'route' => 'admin.users.index',
+                    'title' => 'Orders',
+                    'icon' => 'bi-bag',
+                    'children' => [
+                        ['title' => 'Order List', 'route' => 'orders.index'],
+                        ['title' => 'Orders Create', 'route' => 'orders.create'],
+                    ]
                 ],
                 [
                     'title' => 'Articles',

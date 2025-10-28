@@ -23,11 +23,12 @@
                     {{ ucfirst($order->status) }}
                 </span>
             </p>
+            <p><strong>Delivery Charge:</strong> tk. {{ number_format($order->delivery_charge ?? 0, 2) }}</p>
             <p><strong>Total Amount:</strong> tk. {{ number_format($order->total_price, 2) }}</p>
         </div>
     </div>
 
-    {{-- Example for ordered items --}}
+    {{-- Ordered Items --}}
     @if(isset($order->orderItems) && $order->orderItems->count() > 0)
         <div class="card">
             <div class="card-header">
@@ -52,9 +53,20 @@
                                 <td>tk. {{ number_format($item->price * $item->quantity, 2) }}</td>
                             </tr>
                         @endforeach
+                        {{-- Delivery Charge --}}
+                        <tr>
+                            <td colspan="3" class="text-end"><strong>Delivery Charge:</strong></td>
+                            <td>tk. {{ number_format($order->delivery_charge ?? 0, 2) }}</td>
+                        </tr>
+                        {{-- Total Price --}}
+                        <tr>
+                            <td colspan="3" class="text-end"><strong>Total Price:</strong></td>
+                            <td>tk. {{ number_format($order->total_price, 2) }}</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
+
         </div>
     @else
         <div class="alert alert-info">No items found for this order.</div>

@@ -13,4 +13,9 @@ class OrderPolicy
     {
         return $user->id === $order->user_id;
     }
+    public function update(User $user, Order $order)
+    {
+        // Only allow the owner of the order to cancel/update it
+        return $user->id === $order->user_id;
+    }
 }

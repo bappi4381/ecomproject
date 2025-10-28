@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 
 class Order extends Model
 {
-    protected $fillable = ['order_id','user_id','total_price','status'];
+    protected $guarded = [];
 
     public function orderItems()
     {
@@ -19,11 +19,19 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
-    protected static function boot()
+     protected static function boot()
     {
         parent::boot();
-        static::creating(function($order){
-            $order->order_id = 'ORD-'.strtoupper(Str::random(8));
+
+        static::creating(function ($order) {
+            // Generate a unique, date-based order ID: ORD-YYYYMMDD-XXXX
+            $date = now()->format('Ymd');
+            $lastOrder = self::whereDate('created_at', now()->toDateString())
+                             ->latest('id')
+                             ->first();
+
+            $number = $lastOrder ? ((int) substr($lastOrder->order_id, -4)) + 1 : 1;
+            $order->order_id = 'ORD-' . $date . '-' . str_pad($number, 4, '0', STR_PAD_LEFT);
         });
     }
 }
