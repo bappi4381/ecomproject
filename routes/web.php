@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Models\Subcategory;
+// use App\Models\Subcategory;
 use App\Http\Controllers\Admin\Auth\LoginController as AdminLogin;
 use App\Http\Controllers\Admin\Auth\ProfileController;
 use App\Http\Controllers\Admin\Dashboard\DashboardController;
@@ -17,6 +17,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\User\AuthController;
 use App\Http\Controllers\User\UserDashboardController;
+use App\Http\Controllers\PaymentController;
 
 // User routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -92,6 +93,12 @@ Route::prefix('admin')->group(function () {
 
         Route::get('/profile', [ProfileController::class, 'index'])->name('admin.profile');
         Route::put('/profile', [ProfileController::class, 'update'])->name('admin.profile.update');
+
+        Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+        Route::get('/payments/{id}', [PaymentController::class, 'show'])->name('payments.show');
+        Route::get('/payments/export/{type}', [PaymentController::class, 'export'])->name('payments.export');
+
+
         Route::post('/logout', [AdminLogin::class, 'logout'])->name('admin.logout');
     });
 

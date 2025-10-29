@@ -66,6 +66,13 @@
                     ]
                 ],
                 [
+                    'title' => 'Payments',
+                    'icon' => 'bi-cash-stack',
+                    'children' => [
+                        ['title' => 'Payment List', 'route' => 'payments.index'],
+                    ]
+                ],
+                [
                     'title' => 'Articles',
                     'icon' => 'bi-newspaper',
                     'children' => [
