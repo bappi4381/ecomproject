@@ -16,12 +16,12 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th scope="col" class="py-3 px-2">Image</th>
-                            <th scope="col" class="py-3 px-2 text-start">Book Title</th>
-                            <th scope="col" class="py-3 px-2">Price (Tk)</th>
-                            <th scope="col" class="py-3 px-2">Quantity</th>
-                            <th scope="col" class="py-3 px-2">Subtotal</th>
-                            <th scope="col" class="py-3 px-2">Action</th>
+                            <th class="py-3 px-2 text-center">Image</th>
+                            <th class="py-3 px-2 text-start">Book Title</th>
+                            <th class="py-3 px-2 text-center">Price (Tk)</th>
+                            <th class="py-3 px-2 text-center">Quantity</th>
+                            <th class="py-3 px-2 text-center">Subtotal</th>
+                            <th class="py-3 px-2 text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -32,44 +32,55 @@
                                 $total += $subtotal; 
                             @endphp
                             <tr>
-                                <td class="py-2 px-2">
+                                <!-- Image -->
+                                <td class="py-2 px-2 text-center">
                                     <img src="{{ asset('storage/' . $item['image']) }}" 
-                                         alt="{{ $item['name'] }}" class="img-fluid rounded" style="height: 70px; width: auto;">
+                                        alt="{{ $item['name'] }}" 
+                                        class="img-fluid rounded" 
+                                        style="height:70px; width:auto;">
                                 </td>
+
+                                <!-- Name -->
                                 <td class="py-2 px-2 text-start">{{ $item['name'] }}</td>
-                                <td class="py-2 px-2">{{ number_format($item['price'], 2) }}</td>
-                                <td class="py-2 px-2 align-middle">
+
+                                <!-- Price -->
+                                <td class="py-2 px-2 text-center">{{ number_format($item['price'], 2) }}</td>
+
+                                <!-- Quantity + Update Button -->
+                                <td class="py-2 px-2 text-center">
                                     <form action="{{ route('cart.update', $id) }}" method="POST" class="d-flex justify-content-center align-items-center gap-2">
                                         @csrf
-                                        <input type="number" name="quantity" value="{{ $item['quantity'] }}" min="1" class="form-control form-control-sm" style="width:70px;">
-                                        <button type="submit" class="btn btn-sm btn-outline-primary d-flex align-items-center justify-content-center">
+                                        <input type="number" name="quantity" value="{{ $item['quantity'] }}" min="1" class="form-control form-control-sm text-center" style="width:60px;">
+                                        <button type="submit" class="btn btn-sm btn-outline-primary d-flex align-items-center justify-content-center" style="width:36px; height:36px;">
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                     </form>
                                 </td>
 
-                                <td class="py-2 px-2 align-middle">{{ number_format($subtotal, 2) }}</td>
+                                <!-- Subtotal -->
+                                <td class="py-2 px-2 text-center">{{ number_format($subtotal, 2) }}</td>
 
-                                <td class="py-2 px-2 align-middle">
+                                <!-- Remove Button -->
+                                <td class="py-2 px-2 text-center">
                                     <form action="{{ route('cart.remove', $id) }}" method="POST" class="d-flex justify-content-center align-items-center">
                                         @csrf
-                                        <button type="submit" class="btn btn-sm btn-outline-danger d-flex align-items-center justify-content-center">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger d-flex align-items-center justify-content-center" style="width:36px; height:36px;">
                                             <i class="bi bi-trash3"></i>
                                         </button>
                                     </form>
                                 </td>
-
                             </tr>
                         @endforeach
                     </tbody>
                     <tfoot class="table-light">
                         <tr>
                             <td colspan="4" class="text-end fw-bold py-3 px-2">Total:</td>
-                            <td colspan="2" class="fw-bold text-primary py-3 px-2">{{ number_format($total, 2) }} Tk</td>
+                            <td colspan="2" class="fw-bold text-primary text-center py-3 px-2">{{ number_format($total, 2) }} Tk</td>
                         </tr>
                     </tfoot>
                 </table>
             </div>
+
 
             <div class="d-flex flex-wrap justify-content-between gap-3 mt-4">
                 <a href="{{ route('books.index') }}" class="btn btn-primary px-4 py-2 d-flex align-items-center gap-2">

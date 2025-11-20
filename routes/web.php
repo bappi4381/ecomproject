@@ -18,6 +18,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\User\AuthController;
 use App\Http\Controllers\User\UserDashboardController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\SslcommerzController;
 
 // User routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -43,7 +44,6 @@ Route::get('/login', [AuthController::class, 'showAccountPage'])->name('user.aut
 Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('user.auth.register');
 Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
-
 Route::prefix('user')->middleware('user')->group(function () {
     Route::get('/dashboard', [UserDashboardController::class, 'userDashboard'])->name('user.dashboard');
     Route::get('/profile', [UserDashboardController::class, 'profileIndex'])->name('user.profile');
@@ -101,8 +101,4 @@ Route::prefix('admin')->group(function () {
 
         Route::post('/logout', [AdminLogin::class, 'logout'])->name('admin.logout');
     });
-
-    
-
-
 });
