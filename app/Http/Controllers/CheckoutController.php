@@ -39,7 +39,7 @@ class CheckoutController extends Controller
 
         $password = null;
 
-        // Handle user
+        // Create user if not logged in
         if (!Auth::check()) {
             $password = uniqid('pass_');
             $user = User::firstOrCreate(
@@ -56,12 +56,11 @@ class CheckoutController extends Controller
 
         $user = Auth::user();
 
-        // Calculate totals
         $subtotal = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
         $deliveryCharge = str_contains(strtolower($request->city), 'dhaka') ? 80 : 110;
         $grandTotal = $subtotal + $deliveryCharge;
 
-        // Create order + order items in a transaction
+        // Create order + items
         $order = DB::transaction(function () use ($user, $cart, $request, $grandTotal, $deliveryCharge) {
             $order = Order::create([
                 'user_id' => $user->id,
@@ -72,9 +71,9 @@ class CheckoutController extends Controller
                 'city' => $request->city,
                 'region' => $request->region,
                 'status' => $request->payment_method === 'cod' ? 'pending' : 'processing',
+                'payment_status' => $request->payment_method === 'cod' ? 'unpaid' : 'pending',
             ]);
 
-            // Batch insert order items
             $orderItems = [];
             foreach ($cart as $productId => $item) {
                 $orderItems[] = [
@@ -92,16 +91,24 @@ class CheckoutController extends Controller
             return $order;
         });
 
-        // Queue the order confirmation email
-        $order->load('orderItems'); 
+        $order->load('orderItems');
+
+        // Queue email
         Mail::to($user->email)->queue(new OrderConfirmation($order, $password, $request->payment_method));
 
         // Clear cart
         session()->forget('cart');
 
+        // Redirect to SSLCommerz if online
+        if ($request->payment_method === 'online') {
+            return redirect()->route('ssl.pay', $order->id);
+        }
+
+        // COD success
         return redirect()->route('orders.success', $order->id)
-                         ->with('success', 'Order placed successfully! Check your email for confirmation.');
+            ->with('success', 'Order placed successfully!');
     }
+
 
     public function success(Order $order)
     {

@@ -40,6 +40,12 @@ Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('ch
 
 Route::get('/orders/success/{order}', [CheckoutController::class, 'success'])->name('orders.success');
 
+
+Route::get('/pay/{orderId}', [SslcommerzController::class, 'payNow'])->name('ssl.pay');
+Route::post('/ssl-success', [SslcommerzController::class, 'success'])->name('ssl.success');
+Route::post('/ssl-fail', [SslcommerzController::class, 'fail'])->name('ssl.fail');
+Route::post('/ssl-cancel', [SslcommerzController::class, 'cancel'])->name('ssl.cancel');
+
 Route::get('/login', [AuthController::class, 'showAccountPage'])->name('user.auth.login');
 Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('user.auth.register');

@@ -14,22 +14,20 @@ class PaymentController extends Controller
     {
         $query = Payment::with(['order', 'user']);
 
-        // ✅ Filter by status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        // ✅ Filter by payment gateway
         if ($request->filled('gateway')) {
             $query->where('payment_method', $request->gateway);
         }
 
-        // ✅ Filter by date range
+        
         if ($request->filled('from_date') && $request->filled('to_date')) {
             $query->whereBetween('payment_date', [$request->from_date, $request->to_date]);
         }
 
-        // ✅ Search by user name or order ID
+       
         if ($request->filled('search')) {
             $search = $request->search;
             $query->whereHas('user', function ($q) use ($search) {
@@ -40,7 +38,7 @@ class PaymentController extends Controller
             });
         }
 
-        // ✅ Sort newest first
+        
         $payments = $query->latest()->paginate(20);
 
         return view('admin.payments.index', compact('payments'));
@@ -48,7 +46,6 @@ class PaymentController extends Controller
 
     public function show($id)
     {
-        // ✅ Eager load related order and user for display
         $payment = Payment::with(['order', 'user'])->findOrFail($id);
 
         return view('admin.payments.show', compact('payment'));
