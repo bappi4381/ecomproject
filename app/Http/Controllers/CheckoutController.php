@@ -30,18 +30,21 @@ class CheckoutController extends Controller
             'city' => 'required|string|max:100',
             'region' => 'nullable|string|max:100',
             'payment_method' => 'required|in:cod,online',
+            ''
         ]);
 
         $cart = session()->get('cart', []);
+
         if (empty($cart)) {
             return redirect()->route('books.index')->with('error', 'Cart is empty!');
         }
 
         $password = null;
 
-        // Create user if not logged in
+        // Auto user create if guest
         if (!Auth::check()) {
             $password = uniqid('pass_');
+
             $user = User::firstOrCreate(
                 ['email' => $request->email],
                 [
@@ -51,17 +54,24 @@ class CheckoutController extends Controller
                     'address' => $request->shipping_address,
                 ]
             );
+
             Auth::login($user);
         }
 
         $user = Auth::user();
 
+        // Subtotal
         $subtotal = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
+
+        // Delivery charge
         $deliveryCharge = str_contains(strtolower($request->city), 'dhaka') ? 80 : 110;
+
+        // Total price
         $grandTotal = $subtotal + $deliveryCharge;
 
-        // Create order + items
+        // Create Order & Items
         $order = DB::transaction(function () use ($user, $cart, $request, $grandTotal, $deliveryCharge) {
+
             $order = Order::create([
                 'user_id' => $user->id,
                 'order_id' => 'ORD-' . now()->format('Ymd') . '-' . rand(1000, 9999),
@@ -70,11 +80,19 @@ class CheckoutController extends Controller
                 'shipping_address' => $request->shipping_address,
                 'city' => $request->city,
                 'region' => $request->region,
-                'status' => $request->payment_method === 'cod' ? 'pending' : 'processing',
-                'payment_status' => $request->payment_method === 'cod' ? 'unpaid' : 'pending',
+
+                // Fixed values
+                'status' => 'pending',  
+
+                // COD = unpaid, Online = pending
+                'payment_status' => $request->payment_method === 'cod' ? 'unpaid' : 'paid',
+
+                // Save payment method
+                'payment_method' => $request->payment_method,
             ]);
 
             $orderItems = [];
+
             foreach ($cart as $productId => $item) {
                 $orderItems[] = [
                     'order_id' => $order->id,
@@ -86,6 +104,7 @@ class CheckoutController extends Controller
                     'updated_at' => now(),
                 ];
             }
+
             OrderItem::insert($orderItems);
 
             return $order;
@@ -93,18 +112,22 @@ class CheckoutController extends Controller
 
         $order->load('orderItems');
 
-        // Queue email
-        Mail::to($user->email)->queue(new OrderConfirmation($order, $password, $request->payment_method));
+        // Send confirmation email
+        Mail::to($user->email)->queue(new OrderConfirmation(
+            $order, 
+            $password, 
+            $request->payment_method
+        ));
 
         // Clear cart
         session()->forget('cart');
 
-        // Redirect to SSLCommerz if online
+        // Redirect to payment page
         if ($request->payment_method === 'online') {
-            return redirect()->route('ssl.pay', $order->id);
+            return redirect()->route('sslc.pay', $order->id);
         }
 
-        // COD success
+        // COD → success page
         return redirect()->route('orders.success', $order->id)
             ->with('success', 'Order placed successfully!');
     }

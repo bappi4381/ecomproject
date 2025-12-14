@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('order_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
-
             $table->string('transaction_id')->unique(); // from gateway
             $table->string('payment_method'); // sslcommerz, bkash, stripe, cod, etc.
             $table->decimal('amount', 10, 2);
@@ -23,7 +22,6 @@ return new class extends Migration
             $table->string('status')->default('pending'); // pending, success, failed, refunded
             $table->text('response_data')->nullable(); // JSON response from gateway
             $table->timestamp('payment_date')->nullable();
-
             $table->timestamps();
         });
 

@@ -40,11 +40,16 @@ Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('ch
 
 Route::get('/orders/success/{order}', [CheckoutController::class, 'success'])->name('orders.success');
 
+// Accept both GET and POST for success, fail, cancel
+Route::match(['get','post'], '/ssl-success', [SslcommerzController::class, 'success'])->name('sslc.success');
+Route::match(['get','post'], '/ssl-fail', [SslcommerzController::class, 'fail'])->name('sslc.failure');
+Route::match(['get','post'], '/ssl-cancel', [SslcommerzController::class, 'cancel'])->name('sslc.cancel');
 
-Route::get('/pay/{orderId}', [SslcommerzController::class, 'payNow'])->name('ssl.pay');
-Route::post('/ssl-success', [SslcommerzController::class, 'success'])->name('ssl.success');
-Route::post('/ssl-fail', [SslcommerzController::class, 'fail'])->name('ssl.fail');
-Route::post('/ssl-cancel', [SslcommerzController::class, 'cancel'])->name('ssl.cancel');
+// IPN is always POST
+Route::post('/ssl-ipn', [SslcommerzController::class, 'ipn'])->name('sslc.ipn');
+
+// Pay route
+Route::get('/ssl-pay/{orderId}', [SslcommerzController::class, 'pay'])->name('sslc.pay');
 
 Route::get('/login', [AuthController::class, 'showAccountPage'])->name('user.auth.login');
 Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
