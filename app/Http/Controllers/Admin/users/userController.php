@@ -103,4 +103,14 @@ class UserController extends Controller
         $user->orderItems()->delete();
         return redirect()->route('users.index')->with('success', 'User deleted successfully!');
     }
+
+    // Toggle user status (Block/Unblock)
+    public function toggleStatus(User $user)
+    {
+        $user->status = ($user->status == 'active') ? 'blocked' : 'active';
+        $user->save();
+
+        $message = $user->status == 'active' ? 'User unblocked successfully.' : 'User blocked successfully.';
+        return redirect()->back()->with('success', $message);
+    }
 }

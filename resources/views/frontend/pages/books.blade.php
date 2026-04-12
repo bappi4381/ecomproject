@@ -38,38 +38,63 @@
             <!-- Books Grid -->
             <div class="col-lg-9 col-md-8">
                 <!-- Section Header -->
+                <div class="row mb-4 align-items-center">
+                    <div class="col-md-6">
+                        <form action="{{ route('books.index') }}" method="GET" class="d-flex gap-2">
+                             @if(request('category'))
+                                <input type="hidden" name="category" value="{{ request('category') }}">
+                            @endif
+                            <input type="text" name="search" class="form-control" placeholder="Search by name or author..." value="{{ request('search') }}">
+                            <button type="submit" class="btn btn-outline-primary">Search</button>
+                        </form>
+                    </div>
+                    <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                        <form action="{{ route('books.index') }}" method="GET" class="d-inline-block">
+                             @if(request('category'))
+                                <input type="hidden" name="category" value="{{ request('category') }}">
+                            @endif
+                            @if(request('search'))
+                                <input type="hidden" name="search" value="{{ request('search') }}">
+                            @endif
+                            <select name="sort" class="form-select w-auto d-inline-block" onchange="this.form.submit()">
+                                <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Newest Arrival</option>
+                                <option value="price_low" {{ request('sort') == 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
+                                <option value="price_high" {{ request('sort') == 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
+                            </select>
+                        </form>
+                    </div>
+                </div>
             
                 <!-- Books Grid -->
                 <div class="row">
                     @forelse($books as $book)
-                        <div class="col-sm-6 col-md-4 col-lg-3">
+                        <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
                             <div class="product-item">
                                 <figure class="product-style">
                                     <a href="{{ route('books.show', $book->id) }}">
-                                        <img src="{{ asset('storage/' . $book->images->first()->image) }}" class="product-item" alt="{{ $book->title }}">
+                                        <img src="{{ $book->images->first() ? asset('storage/' . $book->images->first()->image) : asset('frontend/images/default-book.jpg') }}" class="product-item" alt="{{ $book->name }}">
                                     </a>
                                     <form action="{{ route('cart.add') }}" method="POST" class="d-inline">
                                         @csrf
                                         <input type="hidden" name="product_id" value="{{ $book->id }}">
-                                        <button type="button" class="add-to-cart" data-product-tile="add-to-cart" onclick="this.closest('form').submit();">
+                                        <button type="submit" class="add-to-cart" data-product-tile="add-to-cart">
                                             Add to Cart
                                         </button>
                                     </form>
+                                    @if($book->discount)
+                                        <div class="discount-badge">-{{ intval($book->discount) }}%</div>
+                                    @endif
                                 </figure>
-                                <figcaption>
+                                <figcaption class="text-center">
 									<h3>{{ $book->name }}</h3>
 									<span>{{ $book->author }}</span>
-                                     @if ($book->discount != null && $book->discount != 0)
-                                        <span class="badge bg-danger" style="top:10px; right:10px;">
-                                            {{ intval($book->discount) }}%
-                                        </span>
-                                        <div class="item-price">
-                                            <span class="prev-price">tk.{{ $book->price }}</span>
-                                            tk. {{ $book->discounted_price }}
+                                     @if ($book->discount)
+                                        <div class="item-price mt-2">
+                                            <span class="prev-price text-muted text-decoration-line-through me-2">tk.{{ number_format($book->price, 2) }}</span>
+                                            <span class="text-danger fw-bold">tk. {{ number_format($book->discounted_price, 2) }}</span>
                                         </div>
                                     @else
-                                        
-                                        <div class="item-price">tk. {{ $book->price }}</div>
+                                        <div class="item-price fw-bold mt-2">tk. {{ number_format($book->price, 2) }}</div>
                                     @endif
 								</figcaption>
                             </div>

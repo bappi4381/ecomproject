@@ -63,6 +63,12 @@ Route::prefix('user')->middleware('user')->group(function () {
     Route::get('/orders', [UserDashboardController::class, 'userOrders'])->name('user.orders.index');
     Route::get('/orders/{order}', [UserDashboardController::class, 'userOrderDetails'])->name('user.orders.details');
     Route::patch('/orders/{order}/cancel', [UserDashboardController::class, 'cancelOrder'])->name('user.orders.cancel');
+    
+    // wishlist routes
+    Route::get('/wishlist', [\App\Http\Controllers\WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist/add/{product}', [\App\Http\Controllers\WishlistController::class, 'add'])->name('wishlist.add');
+    Route::delete('/wishlist/remove/{id}', [\App\Http\Controllers\WishlistController::class, 'remove'])->name('wishlist.remove');
+
     //track order
     Route::get('/track-order', [UserDashboardController::class, 'trackOrderForm'])->name('user.orders.track');
     Route::post('/track-order', [UserDashboardController::class, 'trackOrder'])->name('user.trackOrder.submit');
@@ -100,6 +106,7 @@ Route::prefix('admin')->group(function () {
         
 
         Route::resource('users', UserController::class);
+        Route::patch('users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggleStatus');
         Route::get('users/{user}/orders', [UserController::class, 'orders'])->name('users.orders');
 
         Route::get('/profile', [ProfileController::class, 'index'])->name('admin.profile');
@@ -109,6 +116,8 @@ Route::prefix('admin')->group(function () {
         Route::get('/payments/{id}', [PaymentController::class, 'show'])->name('payments.show');
         Route::get('/payments/export/{type}', [PaymentController::class, 'export'])->name('payments.export');
 
+        Route::get('/settings', [\App\Http\Controllers\Admin\Settings\SettingController::class, 'index'])->name('admin.settings.index');
+        Route::post('/settings', [\App\Http\Controllers\Admin\Settings\SettingController::class, 'update'])->name('admin.settings.update');
 
         Route::post('/logout', [AdminLogin::class, 'logout'])->name('admin.logout');
     });

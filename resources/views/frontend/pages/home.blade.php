@@ -68,25 +68,24 @@
 					<div class="product-list" data-aos="fade-up">
 						<div class="row">
 							@foreach ($products as $product )
-								<div class="col-md-3">
+								<div class="col-md-3 mb-4">
 									<div class="product-item">
 										<figure class="product-style">
 											<a href="{{ route('books.show', $product->id) }}">
-												<img src="{{ $product->images->first() ? asset('storage/' . $product->images->first()->image) : asset('frontend/images/default-book.jpg') }}" alt="Books" class="product-item">
+												<img src="{{ $product->images->first() ? asset('storage/' . $product->images->first()->image) : asset('frontend/images/default-book.jpg') }}" alt="{{ $product->name }}" class="product-item">
 											</a>
 											<form action="{{ route('cart.add') }}" method="POST" class="d-inline">
 												@csrf
 												<input type="hidden" name="product_id" value="{{ $product->id }}">
-												<button type="button" class="add-to-cart" data-product-tile="add-to-cart" onclick="this.closest('form').submit();">
+												<button type="submit" class="add-to-cart" data-product-tile="add-to-cart">
 													Add to Cart
 												</button>
 											</form>
-
 										</figure>
-										<figcaption>
+										<figcaption class="text-center">
 											<h3>{{ $product->name }}</h3>
 											<span>{{ $product->author }}</span>
-											<div class="item-price">tk. {{ $product->price }}</div>
+											<div class="item-price fw-bold mt-2">tk. {{ number_format($product->price, 2) }}</div>
 										</figcaption>
 									</div>
 								</div>
@@ -125,30 +124,28 @@
 					<div class="product-list" data-aos="fade-up">
 						<div class="grid product-grid">
 							@foreach ($discountedProducts as $discountedProduct )
-								<div class="product-item">
-									 
+								<div class="product-item mb-4">
 									<figure class="product-style">
 										<a href="{{ route('books.show', $discountedProduct->id) }}">
-											<img src="{{ $discountedProduct->images->first() ? asset('storage/' . $discountedProduct->images->first()->image) : asset('frontend/images/default-book.jpg') }}" alt="Books" class="product-item">
+											<img src="{{ $discountedProduct->images->first() ? asset('storage/' . $discountedProduct->images->first()->image) : asset('frontend/images/default-book.jpg') }}" alt="{{ $discountedProduct->name }}" class="product-item">
                                     	</a>
 										<form action="{{ route('cart.add') }}" method="POST" class="d-inline">
 											@csrf
 											<input type="hidden" name="product_id" value="{{ $discountedProduct->id }}">
-											<button type="button" class="add-to-cart" data-product-tile="add-to-cart" onclick="this.closest('form').submit();">
+											<button type="submit" class="add-to-cart" data-product-tile="add-to-cart">
 												Add to Cart
 											</button>
 										</form>
-											
+                                        <div class="discount-badge">
+                                            -{{ intval($discountedProduct->discount) }}%
+                                        </div>
 									</figure>
-									<figcaption>
-										<h3>
-											{{ $discountedProduct->name }}
-											<span class="badge bg-danger fs-6">{{ intval($discountedProduct->discount) }}% OFF</span>
-										</h3>
+									<figcaption class="text-center">
+										<h3>{{ $discountedProduct->name }}</h3>
 										<span>{{ $discountedProduct->author }}</span>
-										<div class="item-price">
-											<span class="prev-price">tk.{{ $discountedProduct->price }}</span>
-											tk. {{ $discountedProduct->discounted_price }}
+										<div class="item-price mt-2">
+											<span class="prev-price text-muted text-decoration-line-through me-2">tk.{{ number_format($discountedProduct->price, 2) }}</span>
+											<span class="text-danger fw-bold">tk. {{ number_format($discountedProduct->discounted_price, 2) }}</span>
 										</div>
 									</figcaption>
 								</div>
@@ -215,107 +212,26 @@
 
 					<div class="row">
 
+                        @forelse($articles as $article)
 						<div class="col-md-4">
-
 							<article class="column" data-aos="fade-up">
-
 								<figure>
-									<a href="#" class="image-hvr-effect">
-										<img src="{{ asset('frontend') }}/images/post-img1.jpg" alt="post" class="post-image">
-									</a>
-								</figure>
-
-								<div class="post-item">
-									<div class="meta-date">Mar 30, 2021</div>
-									<h3><a href="#">Reading books always makes the moments happy</a></h3>
-
-									<div class="links-element">
-										<div class="categories">inspiration</div>
-										<div class="social-links">
-											<ul>
-												<li>
-													<a href="#"><i class="icon icon-facebook"></i></a>
-												</li>
-												<li>
-													<a href="#"><i class="icon icon-twitter"></i></a>
-												</li>
-												<li>
-													<a href="#"><i class="icon icon-behance-square"></i></a>
-												</li>
-											</ul>
-										</div>
-									</div><!--links-element-->
-
-								</div>
-							</article>
-
-						</div>
-						<div class="col-md-4">
-
-							<article class="column" data-aos="fade-up" data-aos-delay="200">
-								<figure>
-									<a href="#" class="image-hvr-effect">
-										<img src="{{ asset('frontend') }}/images/post-img2.jpg" alt="post" class="post-image">
+									<a href="{{ route('frontend.articles.show', $article->slug) }}" class="image-hvr-effect">
+										<img src="{{ $article->image ? asset('storage/' . $article->image) : asset('frontend/images/post-img1.jpg') }}" alt="{{ $article->title }}" class="post-image" style="height: 250px; object-fit: cover; width: 100%; border-radius: 8px;">
 									</a>
 								</figure>
 								<div class="post-item">
-									<div class="meta-date">Mar 29, 2021</div>
-									<h3><a href="#">Reading books always makes the moments happy</a></h3>
-
+									<div class="meta-date">{{ $article->published_at->format('M d, Y') }}</div>
+									<h3><a href="{{ route('frontend.articles.show', $article->slug) }}">{{ $article->title }}</a></h3>
 									<div class="links-element">
-										<div class="categories">inspiration</div>
-										<div class="social-links">
-											<ul>
-												<li>
-													<a href="#"><i class="icon icon-facebook"></i></a>
-												</li>
-												<li>
-													<a href="#"><i class="icon icon-twitter"></i></a>
-												</li>
-												<li>
-													<a href="#"><i class="icon icon-behance-square"></i></a>
-												</li>
-											</ul>
-										</div>
+										<div class="categories">{{ $article->category->name ?? 'News' }}</div>
 									</div><!--links-element-->
-
 								</div>
 							</article>
-
 						</div>
-						<div class="col-md-4">
-
-							<article class="column" data-aos="fade-up" data-aos-delay="400">
-								<figure>
-									<a href="#" class="image-hvr-effect">
-										<img src="{{ asset('frontend') }}/images/post-img3.jpg" alt="post" class="post-image">
-									</a>
-								</figure>
-								<div class="post-item">
-									<div class="meta-date">Feb 27, 2021</div>
-									<h3><a href="#">Reading books always makes the moments happy</a></h3>
-
-									<div class="links-element">
-										<div class="categories">inspiration</div>
-										<div class="social-links">
-											<ul>
-												<li>
-													<a href="#"><i class="icon icon-facebook"></i></a>
-												</li>
-												<li>
-													<a href="#"><i class="icon icon-twitter"></i></a>
-												</li>
-												<li>
-													<a href="#"><i class="icon icon-behance-square"></i></a>
-												</li>
-											</ul>
-										</div>
-									</div><!--links-element-->
-
-								</div>
-							</article>
-
-						</div>
+                        @empty
+                        <div class="col-12 text-center text-muted">No articles found.</div>
+                        @endforelse
 
 					</div>
 

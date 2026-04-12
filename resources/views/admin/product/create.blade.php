@@ -81,9 +81,14 @@
                     </div>
                 </div>
 
-                <div class="mb-3">
+                {{-- <div class="mb-3">
                     <label class="form-label fw-semibold">Description</label>
                     <textarea name="description" class="form-control" rows="3">{{ old('description', $product->description ?? '') }}</textarea>
+                </div> --}}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Description</label>
+                    <div id="editor" style="height: 400px;"></div>
+                    <textarea name="description" id="description" hidden></textarea>
                 </div>
             </div>
         </div>

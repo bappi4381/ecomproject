@@ -56,6 +56,7 @@
                     <th>City</th>
                     <th>State</th>
                     <th>Country</th>
+                    <th>Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -69,7 +70,21 @@
                         <td>{{ $user->city ?? '-' }}</td>
                         <td>{{ $user->state ?? '-' }}</td>
                         <td>{{ $user->country ?? '-' }}</td>
+                        <td>
+                            @if($user->status == 'active')
+                                <span class="badge bg-success">Active</span>
+                            @else
+                                <span class="badge bg-danger">Blocked</span>
+                            @endif
+                        </td>
                         <td class="d-flex justify-content-center gap-1">
+                            <form action="{{ route('users.toggleStatus', $user) }}" method="POST">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="btn btn-sm {{ $user->status == 'active' ? 'btn-outline-danger' : 'btn-outline-success' }} mb-1" title="{{ $user->status == 'active' ? 'Block User' : 'Unblock User' }}">
+                                    <i class="bi {{ $user->status == 'active' ? 'bi-lock-fill' : 'bi-unlock-fill' }}"></i>
+                                </button>
+                            </form>
                             <a href="{{ route('users.edit', $user) }}" class="btn btn-sm btn-warning mb-1">
                                 <i class="bi bi-pencil-square"></i>
                             </a>
