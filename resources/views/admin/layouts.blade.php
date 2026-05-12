@@ -81,7 +81,11 @@
                     ]
                     
                 ],
-            ];
+                [
+                    'title' => 'Coupons',
+                    'icon' => 'bi-tag',
+                    'route' => 'admin.coupons.index',
+                ],
         @endphp
 
         <ul class="sidebar-nav">
