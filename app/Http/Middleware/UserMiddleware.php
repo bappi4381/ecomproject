@@ -14,7 +14,7 @@ class UserMiddleware
     public function handle($request, Closure $next)
     {
         if (!Auth::check()) {
-            return redirect()->route('auth.account')->with('error', 'Please log in to continue.');
+            return redirect()->route('user.auth.login')->with('error', 'Please log in to continue.');
         }
 
         return $next($request);

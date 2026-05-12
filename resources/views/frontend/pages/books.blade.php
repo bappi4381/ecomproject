@@ -1,63 +1,106 @@
 @extends('frontend.layout')
 
-@section('title','Books')
+@section('title', 'Shop Electronics')
 
 @section('content')
-<section class="py-5">
-    <div class="container">
-        <div class="row g-4">
-            <!-- Left Sidebar -->
-            <aside class="col-lg-3 col-md-4">
-                <div class="bg-light p-4 rounded shadow-sm sticky-top" style="top: 100px;">
-                    <h5 class="mb-3 fw-bold">Filter by Category</h5>
-                    <ul class="list-group mb-4">
-                        @foreach($categories as $category)
-                            <li class="list-group-item py-2 px-3">
-                                <a href="{{ route('books.index', ['category' => $category->id]) }}" class="text-decoration-none text-dark d-block">
-                                    {{ $category->name }}
-                                </a>
-                            </li>
-                        @endforeach
-                    </ul>
+<!-- Breadcrumbs / Page Header -->
+<div class="bg-slate-900 py-16 relative overflow-hidden">
+    <div class="absolute inset-0 opacity-20">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-primary rounded-full blur-[150px]"></div>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 relative z-10 text-center">
+        <h1 class="text-4xl lg:text-5xl font-black text-white tracking-tighter uppercase mb-4">Store Catalog</h1>
+        <div class="flex items-center justify-center gap-2 text-slate-400 font-bold text-xs uppercase tracking-widest">
+            <a href="{{ route('home') }}" class="hover:text-primary transition-colors">Home</a>
+            <i class="bi bi-chevron-right text-[10px]"></i>
+            <span class="text-white">Shop</span>
+        </div>
+    </div>
+</div>
 
-                    <h5 class="mb-3 fw-bold">Filter by Price</h5>
-                    <form action="{{ route('books.index') }}" method="GET">
-                        <div class="mb-3">
-                            <label class="form-label">Min Price</label>
-                            <input type="number" name="min_price" class="form-control" placeholder="0" value="{{ request('min_price') }}">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Max Price</label>
-                            <input type="number" name="max_price" class="form-control" placeholder="1000" value="{{ request('max_price') }}">
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Apply Filter</button>
-                    </form>
+<section class="py-20 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex flex-col lg:flex-row gap-12">
+            <!-- Left Sidebar Filter -->
+            <aside class="w-full lg:w-1/4">
+                <div class="space-y-8 sticky top-24">
+                    <!-- Search Widget -->
+                    <div class="bg-white p-8 rounded-[32px] shadow-xl shadow-slate-200/50 border border-slate-100">
+                        <h5 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
+                            <span class="w-2 h-2 bg-primary rounded-full"></span>
+                            Quick Search
+                        </h5>
+                        <form action="{{ route('books.index') }}" method="GET" class="relative group">
+                            @if(request('category'))
+                                <input type="hidden" name="category" value="{{ request('category') }}">
+                            @endif
+                            <input type="text" name="search" 
+                                   class="w-full bg-slate-50 border-none rounded-2xl pl-12 pr-4 py-4 text-sm font-bold focus:ring-2 focus:ring-primary transition-all outline-none" 
+                                   placeholder="Search products..." value="{{ request('search') }}">
+                            <i class="bi bi-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        </form>
+                    </div>
+
+                    <!-- Category Widget -->
+                    <div class="bg-white p-8 rounded-[32px] shadow-xl shadow-slate-200/50 border border-slate-100">
+                        <h5 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
+                            <span class="w-2 h-2 bg-primary rounded-full"></span>
+                            Departments
+                        </h5>
+                        <ul class="space-y-2 p-0 m-0 list-none">
+                            @foreach($categories as $category)
+                                <li>
+                                    <a href="{{ route('books.index', ['category' => $category->id]) }}" 
+                                       class="flex items-center justify-between group p-4 rounded-2xl transition-all {{ request('category') == $category->id ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'hover:bg-slate-50 text-slate-600' }} no-underline">
+                                        <span class="font-bold text-sm">{{ $category->name }}</span>
+                                        <div class="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+                                            <i class="bi bi-chevron-right text-[10px]"></i>
+                                        </div>
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+
+                    <!-- Price Filter -->
+                    <div class="bg-white p-8 rounded-[32px] shadow-xl shadow-slate-200/50 border border-slate-100">
+                        <h5 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
+                            <span class="w-2 h-2 bg-primary rounded-full"></span>
+                            Price Range
+                        </h5>
+                        <form action="{{ route('books.index') }}" method="GET" class="space-y-6">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-black uppercase text-slate-400 ml-2">From</label>
+                                    <input type="number" name="min_price" class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-primary outline-none" placeholder="Min" value="{{ request('min_price') }}">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-black uppercase text-slate-400 ml-2">To</label>
+                                    <input type="number" name="max_price" class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-primary outline-none" placeholder="Max" value="{{ request('max_price') }}">
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full py-4 bg-slate-900 hover:bg-primary text-white font-black uppercase text-xs tracking-widest rounded-xl transition-all shadow-lg active:scale-95">
+                                Filter Results
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </aside>
 
-            <!-- Books Grid -->
-            <div class="col-lg-9 col-md-8">
-                <!-- Section Header -->
-                <div class="row mb-4 align-items-center">
-                    <div class="col-md-6">
-                        <form action="{{ route('books.index') }}" method="GET" class="d-flex gap-2">
-                             @if(request('category'))
-                                <input type="hidden" name="category" value="{{ request('category') }}">
-                            @endif
-                            <input type="text" name="search" class="form-control" placeholder="Search by name or author..." value="{{ request('search') }}">
-                            <button type="submit" class="btn btn-outline-primary">Search</button>
-                        </form>
+            <!-- Product Display Area -->
+            <div class="w-full lg:w-3/4">
+                <!-- Sorting Bar -->
+                <div class="bg-white p-6 rounded-3xl shadow-lg shadow-slate-200/40 mb-10 border border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div class="text-slate-500 font-bold text-sm">
+                        Showing <span class="text-slate-900">{{ $books->count() }}</span> of <span class="text-slate-900">{{ $books->total() }}</span> results
                     </div>
-                    <div class="col-md-6 text-md-end mt-3 mt-md-0">
-                        <form action="{{ route('books.index') }}" method="GET" class="d-inline-block">
-                             @if(request('category'))
-                                <input type="hidden" name="category" value="{{ request('category') }}">
-                            @endif
-                            @if(request('search'))
-                                <input type="hidden" name="search" value="{{ request('search') }}">
-                            @endif
-                            <select name="sort" class="form-select w-auto d-inline-block" onchange="this.form.submit()">
-                                <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Newest Arrival</option>
+                    <div class="flex items-center gap-4">
+                        <span class="text-xs font-black uppercase text-slate-400 tracking-widest">Sort By:</span>
+                        <form action="{{ route('books.index') }}" method="GET">
+                             @if(request('category')) <input type="hidden" name="category" value="{{ request('category') }}"> @endif
+                             @if(request('search')) <input type="hidden" name="search" value="{{ request('search') }}"> @endif
+                            <select name="sort" class="bg-slate-50 border-none rounded-2xl px-6 py-4 text-sm font-bold focus:ring-2 focus:ring-primary transition-all outline-none appearance-none cursor-pointer pr-10 relative" onchange="this.form.submit()">
+                                <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Newest Arrivals</option>
                                 <option value="price_low" {{ request('sort') == 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
                                 <option value="price_high" {{ request('sort') == 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
                             </select>
@@ -65,56 +108,70 @@
                     </div>
                 </div>
             
-                <!-- Books Grid -->
-                <div class="row">
+                <!-- Product Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     @forelse($books as $book)
-                        <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
-                            <div class="product-item">
-                                <figure class="product-style">
-                                    <a href="{{ route('books.show', $book->id) }}">
-                                        <img src="{{ $book->images->first() ? asset('storage/' . $book->images->first()->image) : asset('frontend/images/default-book.jpg') }}" class="product-item" alt="{{ $book->name }}">
-                                    </a>
-                                    <form action="{{ route('cart.add') }}" method="POST" class="d-inline">
-                                        @csrf
-                                        <input type="hidden" name="product_id" value="{{ $book->id }}">
-                                        <button type="submit" class="add-to-cart" data-product-tile="add-to-cart">
-                                            Add to Cart
-                                        </button>
-                                    </form>
-                                    @if($book->discount)
-                                        <div class="discount-badge">-{{ intval($book->discount) }}%</div>
-                                    @endif
-                                </figure>
-                                <figcaption class="text-center">
-									<h3>{{ $book->name }}</h3>
-									<span>{{ $book->author }}</span>
-                                     @if ($book->discount)
-                                        <div class="item-price mt-2">
-                                            <span class="prev-price text-muted text-decoration-line-through me-2">tk.{{ number_format($book->price, 2) }}</span>
-                                            <span class="text-danger fw-bold">tk. {{ number_format($book->discounted_price, 2) }}</span>
-                                        </div>
-                                    @else
-                                        <div class="item-price fw-bold mt-2">tk. {{ number_format($book->price, 2) }}</div>
-                                    @endif
-								</figcaption>
+                        <div class="group bg-white rounded-[32px] border border-slate-100 p-4 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] transition-all hover:-translate-y-2 relative overflow-hidden flex flex-col">
+                            @if($book->discount)
+                                <div class="absolute top-6 right-6 bg-red-500 text-white text-[10px] font-black px-3 py-1 rounded-full z-20 shadow-lg shadow-red-500/20">
+                                    -{{ intval($book->discount) }}%
+                                </div>
+                            @endif
+                            
+                            <div class="aspect-square bg-slate-50 rounded-[24px] mb-6 overflow-hidden relative flex items-center justify-center p-8">
+                                <img src="{{ $book->images->first() ? asset('storage/' . $book->images->first()->image) : 'https://images.unsplash.com/photo-1526733169359-81173747976e?q=80&w=1470&auto=format&fit=crop' }}" 
+                                     class="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-700" alt="{{ $book->name }}">
+                                
+                                <form action="{{ route('cart.add') }}" method="POST" class="absolute bottom-0 left-0 w-full translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-10 p-4">
+                                    @csrf
+                                    <input type="hidden" name="product_id" value="{{ $book->id }}">
+                                    <button type="submit" class="w-full py-4 bg-primary hover:bg-primary-dark text-white font-black uppercase text-[10px] tracking-widest rounded-xl transition-all shadow-xl shadow-primary/30 active:scale-95">
+                                        Add to Cart
+                                    </button>
+                                </form>
+                            </div>
+                            
+                            <div class="text-center px-2 flex-1 flex flex-col justify-between">
+                                <div class="mb-4">
+                                    <span class="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1 block">{{ $book->brand ?? 'Premium Brand' }}</span>
+                                    <h3 class="text-sm font-bold text-slate-900 mb-2 group-hover:text-primary transition-colors">
+                                        <a href="{{ route('books.show', $book->id) }}" class="no-underline text-inherit leading-tight block">{{ $book->name }}</a>
+                                    </h3>
+                                    <div class="flex justify-center items-center gap-1 text-yellow-400 text-[10px]">
+                                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                                    </div>
+                                </div>
+                                
+                                @if ($book->discount)
+                                    <div class="flex flex-col items-center gap-1">
+                                        <span class="text-[11px] text-slate-400 line-through font-bold">tk. {{ number_format($book->price, 2) }}</span>
+                                        <span class="text-lg font-black text-red-500 tracking-tighter">tk. {{ number_format($book->discounted_price, 2) }}</span>
+                                    </div>
+                                @else
+                                    <div class="text-lg font-black text-primary tracking-tighter">tk. {{ number_format($book->price, 2) }}</div>
+                                @endif
                             </div>
                         </div>
                     @empty
-                        <div class="col-12 text-center">
-                            <p class="text-muted fs-5">No books found.</p>
+                        <div class="col-span-full py-32 text-center bg-white rounded-[40px] shadow-xl shadow-slate-200/50 border border-slate-100">
+                            <div class="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-8">
+                                <i class="bi bi-search text-4xl text-slate-300"></i>
+                            </div>
+                            <h3 class="text-2xl font-black text-slate-900 mb-4 tracking-tighter">No Products Found</h3>
+                            <p class="text-slate-500 font-bold mb-8">Try adjusting your filters or search keywords.</p>
+                            <a href="{{ route('books.index') }}" class="inline-block px-8 py-4 bg-primary text-white font-black uppercase text-xs tracking-widest rounded-xl shadow-lg shadow-primary/30 no-underline">Clear All Filters</a>
                         </div>
                     @endforelse
                 </div>
 
-                <!-- Pagination -->
-                <div class="row mt-4">
-                    <div class="col-12 d-flex justify-content-center">
+                <!-- Pagination Area -->
+                <div class="mt-16 flex justify-center">
+                    <div class="bg-white p-4 rounded-2xl shadow-lg shadow-slate-200/50 border border-slate-100">
                         {{ $books->withQueryString()->links('pagination::bootstrap-5') }}
                     </div>
                 </div>
             </div>
-
-        </div> <!-- row -->
-    </div> <!-- container -->
+        </div>
+    </div>
 </section>
 @endsection

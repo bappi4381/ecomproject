@@ -138,7 +138,7 @@
                                 <tr>
                                     <td>#{{ $order->order_id }}</td>
                                     <td>{{ $order->user->name ?? 'Guest' }}</td>
-                                    <td>tk. {{ number_format($order->total_amount_with_delivery, 2) }}</td>
+                                    <td>tk. {{ number_format($order->total_price, 2) }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>

@@ -16,7 +16,15 @@ class UserDashboardController extends Controller
 {
     use AuthorizesRequests;
     public function userDashboard() {
-        return view('user.dashboard.index');
+        $user = Auth::user();
+        $stats = [
+            'total_orders' => $user->orders()->count(),
+            'pending_orders' => $user->orders()->where('status', 'pending')->count(),
+            'delivered_orders' => $user->orders()->where('status', 'delivered')->count(),
+            'wishlist_count' => $user->wishlist()->count(),
+        ];
+        $recentOrders = $user->orders()->latest()->take(5)->get();
+        return view('user.dashboard.index', compact('stats', 'recentOrders'));
     }
 
     public function profileIndex() {
@@ -106,10 +114,14 @@ class UserDashboardController extends Controller
     }
 
     public function trackOrder(Request $request) {
-        $request->validate(['order_number' => 'required|string']);
-        $order = Order::where('order_number', $request->order_number)->first();
+        $request->validate(['order_id' => 'required|string']);
+        $order = Order::where('order_id', $request->order_id)->first();
         return $order 
             ? view('user.orders.track', compact('order'))
             : redirect()->back()->with('error', 'Order not found!');
+    }
+
+    public function userMessages() {
+        return view('user.messages.index');
     }
 }

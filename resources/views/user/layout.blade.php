@@ -3,160 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'User Dashboard')</title>
-
-    {{-- Bootstrap 5 CSS --}}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>@yield('title', 'User Dashboard') - ONEMALL</title>
 
     {{-- Bootstrap Icons --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
-    {{-- Custom CSS --}}
-    <link href="{{ asset('admin/styles.css') }}" rel="stylesheet">
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-</head>
-<body>
-    {{-- Sidebar --}}
-    <nav id="sidebar" class="sidebar">
-        <div class="sidebar-header">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-            <h4 class="text-white mb-0">
-                <a href="{{route('home')}}" class="text-white text-decoration-none fw-bold" ><i class="bi bi-book me-2"></i> BookSaw </a> 
-            </h4>
+    {{-- Custom Fonts --}}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #20a7db;
+            --primary-dark: #1c96c5;
+            --slate-900: #0f172a;
+            --slate-800: #1e293b;
+            --slate-700: #334155;
+            --slate-50: #f8fafc;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--slate-50); }
+        .sidebar { 
+            width: 280px; 
+            height: 100vh; 
+            position: fixed; 
+            left: 0; 
+            top: 0; 
+            background: var(--slate-900); 
+            z-index: 50;
+            transition: all 0.3s ease;
+        }
+        .main-content { 
+            margin-left: 280px; 
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+        @media (max-width: 1024px) {
+            .sidebar { left: -280px; }
+            .sidebar.active { left: 0; }
+            .main-content { margin-left: 0; }
+        }
+        .nav-link-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        .nav-link-item:hover, .nav-link-item.active {
+            color: #fff;
+            background: rgba(255,255,255,0.03);
+        }
+        .nav-link-item.active {
+            background: linear-gradient(90deg, rgba(32, 167, 219, 0.1) 0%, rgba(32, 167, 219, 0) 100%);
+            border-right: 3px solid var(--primary);
+        }
+        .nav-link-item i {
+            color: var(--primary);
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        .nav-link-item:hover i {
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 8px rgba(32, 167, 219, 0.5));
+        }
+    </style>
+</head>
+<body class="antialiased text-slate-700">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar shadow-2xl">
+        <div class="p-8 border-b border-white/5">
+            <a href="{{ route('home') }}" class="flex items-center gap-3 group no-underline">
+                <div class="bg-primary text-white w-10 h-10 rounded-xl flex items-center justify-center text-xl shadow-lg shadow-primary/20">
+                    <i class="bi bi-lightning-charge-fill"></i>
+                </div>
+                <div class="flex flex-col">
+                    <h1 class="m-0 text-lg font-black tracking-tighter leading-none uppercase italic text-white">ONEMALL</h1>
+                    <span class="text-[7px] text-primary font-black tracking-[0.3em] uppercase mt-1 text-left">Dashboard</span>
+                </div>
+            </a>
         </div>
 
-        @php
-            $currentRoute = Route::currentRouteName();
+        <nav class="mt-6">
+            @php
+                $currentRoute = Route::currentRouteName();
+                $menus = [
+                    ['title' => 'Dashboard', 'icon' => 'bi-grid-1x2-fill', 'route' => 'user.dashboard'],
+                    ['title' => 'My Profile', 'icon' => 'bi-person-fill', 'route' => 'user.profile'],
+                    ['title' => 'My Orders', 'icon' => 'bi-bag-fill', 'route' => 'user.orders.index'],
+                    ['title' => 'Track Order', 'icon' => 'bi-geo-alt-fill', 'route' => 'user.orders.track'],
+                    ['title' => 'Messages', 'icon' => 'bi-chat-dots-fill', 'route' => 'user.messages.index'],
+                ];
+            @endphp
 
-            $menus = [
-                ['title' => 'Dashboard', 'icon' => 'bi-house-door', 'route' => 'user.dashboard'],
-                ['title' => 'Profile', 'icon' => 'bi-person', 'route' => 'user.profile'],
-                [
-                    'title' => 'Orders',
-                    'icon' => 'bi-bag',
-                    'children' => [
-                        ['title' => 'My Orders', 'route' => 'user.orders.index'],
-                        ['title' => 'Track Order', 'route' => 'user.orders.track'],
-                    ],
-                ],
-                ['title' => 'Messages', 'icon' => 'bi-chat-dots', 'route' => 'user.messages.index'],
-            ];
-        @endphp
-
-        <ul class="sidebar-nav">
-            @foreach ($menus as $menu)
-                @if (isset($menu['children']))
-                    @php
-                        $childRoutes = array_column($menu['children'], 'route');
-                        $isActive = in_array($currentRoute, $childRoutes) ? 'active' : '';
-                        $isShow = in_array($currentRoute, $childRoutes) ? 'show' : '';
-                    @endphp
-                    <li class="nav-item">
-                        <a class="nav-link d-flex justify-content-between align-items-center {{ $isActive }}"
-                           data-bs-toggle="collapse" href="#collapse{{ Str::slug($menu['title']) }}" role="button"
-                           aria-expanded="{{ $isShow ? 'true' : 'false' }}">
-                            <span><i class="bi {{ $menu['icon'] }}"></i> {{ $menu['title'] }}</span>
-                            <i class="bi bi-chevron-right small rotate-icon"></i>
-                        </a>
-                        <div class="collapse {{ $isShow }}" id="collapse{{ Str::slug($menu['title']) }}">
-                            <ul class="nav flex-column ms-3">
-                                @foreach ($menu['children'] as $child)
-                                    <li class="nav-item">
-                                        <a href="{{ route($child['route']) }}"
-                                           class="nav-link {{ $currentRoute === $child['route'] ? 'active' : '' }}">
-                                           {{ $child['title'] }}
-                                        </a>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    </li>
-                @else
-                    <li class="nav-item">
-                        <a href="{{ route($menu['route']) }}"
-                           class="nav-link {{ $currentRoute === $menu['route'] ? 'active' : '' }}">
+            <div class="px-4 mb-4">
+                <p class="text-[9px] font-black uppercase text-slate-500 tracking-[0.2em] px-4 mb-4">Menu</p>
+                <div class="space-y-1">
+                    @foreach ($menus as $menu)
+                        <a href="{{ route($menu['route']) }}" class="nav-link-item rounded-xl {{ $currentRoute === $menu['route'] ? 'active' : '' }}">
                             <i class="bi {{ $menu['icon'] }}"></i>
-                            <span class="nav-text">{{ $menu['title'] }}</span>
+                            <span>{{ $menu['title'] }}</span>
                         </a>
-                    </li>
-                @endif
-            @endforeach
-        </ul>
-    </nav>
-
-    {{-- Main Content Wrapper --}}
-    <div id="main-wrapper" class="main-wrapper">
-        {{-- Top Navbar --}}
-        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
-            <div class="container-fluid">
-                <button class="btn btn-outline-secondary d-lg-none me-3" type="button" id="sidebarToggle">
-                    <i class="bi bi-list"></i>
-                </button>
-
-                {{-- Search Bar --}}
-                <div class="d-flex flex-grow-1 me-3">
-                    <div class="input-group" style="max-width: 400px;">
-                        <span class="input-group-text bg-light border-end-0">
-                            <i class="bi bi-search"></i>
-                        </span>
-                        <input type="text" class="form-control border-start-0 bg-light" placeholder="Search...">
-                    </div>
+                    @endforeach
                 </div>
+            </div>
 
-                {{-- Notifications and Profile --}}
-                <div class="d-flex align-items-center">
-                    {{-- Notifications --}}
-                    <div class="dropdown me-3">
-                        <button class="btn position-relative" type="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-bell"></i>
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                2
-                            </span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#">New message received</a></li>
-                            <li><a class="dropdown-item" href="#">Order shipped</a></li>
-                        </ul>
-                    </div>
-
-                    {{-- User Profile --}}
-                    <div class="dropdown">
-                        @php
-                            $user = Auth::user();
-                            $avatarUrl = $user && $user->avatar 
-                                ? asset('storage/' . $user->avatar)
-                                : 'https://via.placeholder.com/32x32/28a745/ffffff?text=' . strtoupper(substr($user->name ?? 'U', 0, 2));
-                            $userName = $user->name ?? 'User';
-                        @endphp
-
-                        <button class="btn dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
-                            <img src="{{ $avatarUrl }}" class="rounded-circle me-2" alt="User Avatar" width="32" height="32">
-                            <span class="d-none d-md-inline">{{ $userName }}</span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{{ route('user.profile') }}"><i class="bi bi-person me-2"></i>Profile</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <form action="{{ route('auth.logout') }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
-                                </form>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+            <div class="px-4 mt-auto absolute bottom-8 w-full">
+                <form action="{{ route('auth.logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="nav-link-item w-full rounded-xl text-rose-400 hover:text-rose-500 hover:bg-rose-500/5 border border-transparent hover:border-rose-500/10 transition-all">
+                        <i class="bi bi-box-arrow-right text-rose-400"></i>
+                        <span>Logout</span>
+                    </button>
+                </form>
             </div>
         </nav>
+    </aside>
 
-        {{-- Main Content --}}
-        <main class="main-content">
-            <div class="container-fluid py-4">
-                @yield('content')
+    <!-- Main Content -->
+    <div class="main-content flex flex-col">
+        <!-- Top Navbar -->
+        <header class="h-20 bg-white border-b border-slate-100 flex items-center justify-between px-8 sticky top-0 z-40">
+            <div class="flex items-center gap-4">
+                <button id="sidebarToggle" class="lg:hidden text-2xl text-slate-400 hover:text-slate-900 transition-colors">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="hidden md:flex items-center gap-2 text-[10px] font-black uppercase text-slate-400 tracking-widest">
+                    <span>Account</span>
+                    <i class="bi bi-chevron-right text-[8px]"></i>
+                    <span class="text-slate-900">@yield('title')</span>
+                </div>
             </div>
+
+            <div class="flex items-center gap-6">
+                <!-- Notifications -->
+                <button class="relative w-10 h-10 rounded-xl bg-slate-50 text-slate-400 hover:text-primary hover:bg-primary/5 transition-all flex items-center justify-center">
+                    <i class="bi bi-bell"></i>
+                    <span class="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border-2 border-white"></span>
+                </button>
+
+                <!-- User Profile -->
+                @php
+                    $user = Auth::user();
+                    $avatarUrl = $user && $user->avatar 
+                        ? asset('storage/' . $user->avatar)
+                        : 'https://via.placeholder.com/32x32/f1f5f9/94a3b8?text=' . strtoupper(substr($user->name ?? 'U', 0, 2));
+                @endphp
+                <div class="flex items-center gap-3 pl-6 border-l border-slate-100">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-[11px] font-black text-slate-900 leading-none mb-1">{{ Auth::user()->name }}</p>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Customer</p>
+                    </div>
+                    <img src="{{ $avatarUrl }}" class="w-10 h-10 rounded-xl object-cover border-2 border-white shadow-sm" alt="User">
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <main class="p-8 lg:p-12">
+            @yield('content')
         </main>
+
+        <!-- Footer -->
+        <footer class="mt-auto py-8 px-12 border-t border-slate-100 bg-white">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    &copy; 2026 <span class="text-slate-900">ONEMALL</span>. All rights reserved.
+                </p>
+                <div class="flex gap-6">
+                    <a href="#" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest hover:text-primary transition-colors">Privacy Policy</a>
+                    <a href="#" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest hover:text-primary transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </footer>
     </div>
 
-    {{-- Bootstrap JS --}}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sidebar Toggle for Mobile
+        const sidebar = document.getElementById('sidebar');
+        const toggle = document.getElementById('sidebarToggle');
+        
+        if(toggle) {
+            toggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+            });
+        }
+
+        // Close sidebar on click outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth < 1024) {
+                if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+    </script>
 </body>
 </html>

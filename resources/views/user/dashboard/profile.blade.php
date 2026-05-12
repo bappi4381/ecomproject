@@ -1,147 +1,202 @@
 @extends('user.layout')
 
-@section('title', 'My Profile')
+@section('title', 'Profile Settings')
 
 @section('content')
-<div class="container mt-4">
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-
-    <div class="row">
-        {{-- Profile Info --}}
-        <div class="col-lg-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <img src="{{ $user->avatar 
-                                ? asset('storage/' . $user->avatar) 
-                                : 'https://via.placeholder.com/100x100/28a745/ffffff?text=' . strtoupper(substr($user->name, 0, 2)) }}" 
-                         class="rounded-circle mb-3" 
-                         alt="{{ $user->name }}" 
-                         width="100" height="100">
-                    <h5 class="mb-0">{{ $user->name }}</h5>
-                    <small class="text-muted">{{ $user->email }}</small>
-                </div>
-            </div>
-        </div>
-
-        {{-- Edit Profile --}}
-        <div class="col-lg-8">
-            <div class="card">
-                <div class="card-header">
-                    <h5>Update Profile</h5>
-                </div>
-                <div class="card-body">
-                    <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        @method('PUT')
-
-                        {{-- Name --}}
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Full Name</label>
-                            <input type="text" name="name" id="name" 
-                                   class="form-control @error('name') is-invalid @enderror" 
-                                   value="{{ old('name', $user->name) }}" required>
-                            @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-
-                        {{-- Email --}}
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email Address</label>
-                            <input type="email" name="email" id="email" 
-                                   class="form-control @error('email') is-invalid @enderror" 
-                                   value="{{ old('email', $user->email) }}" required>
-                            @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-
-                        {{-- Phone --}}
-                        <div class="mb-3">
-                            <label for="phone" class="form-label">Phone</label>
-                            <input type="text" name="phone" id="phone"
-                                   class="form-control @error('phone') is-invalid @enderror"
-                                   value="{{ old('phone', $user->phone) }}">
-                            @error('phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-
-                        {{-- Address --}}
-                        <div class="mb-3">
-                            <label for="address" class="form-label">Address</label>
-                            <input type="text" name="address" id="address"
-                                   class="form-control @error('address') is-invalid @enderror"
-                                   value="{{ old('address', $user->address) }}">
-                            @error('address') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-
-                        {{-- City --}}
-                        <div class="mb-3">
-                            <label for="city" class="form-label">City</label>
-                            <input type="text" name="city" id="city"
-                                   class="form-control @error('city') is-invalid @enderror"
-                                   value="{{ old('city', $user->city) }}">
-                            @error('city') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-
-                        {{-- State --}}
-                        <div class="mb-3">
-                            <label for="state" class="form-label">State</label>
-                            <input type="text" name="state" id="state"
-                                   class="form-control @error('state') is-invalid @enderror"
-                                   value="{{ old('state', $user->state) }}">
-                            @error('state') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-
-                        {{-- Postal Code --}}
-                        <div class="mb-3">
-                            <label for="postal_code" class="form-label">Postal Code</label>
-                            <input type="text" name="postal_code" id="postal_code"
-                                   class="form-control @error('postal_code') is-invalid @enderror"
-                                   value="{{ old('postal_code', $user->postal_code) }}">
-                            @error('postal_code') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-
-                        {{-- Country --}}
-                        <div class="mb-3">
-                            <label for="country" class="form-label">Country</label>
-                            <input type="text" name="country" id="country"
-                                   class="form-control @error('country') is-invalid @enderror"
-                                   value="{{ old('country', $user->country) }}">
-                            @error('country') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-
-                        {{-- Email Verified --}}
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="is_email_verified" name="is_email_verified" {{ $user->is_email_verified ? 'checked' : '' }}>
-                            <label class="form-check-label" for="is_email_verified">Email Verified</label>
-                        </div>
-
-                        {{-- Avatar --}}
-                        <div class="mb-3">
-                            <label for="avatar" class="form-label">Profile Picture</label>
-                            <input type="file" name="avatar" id="avatar" class="form-control @error('avatar') is-invalid @enderror">
-                            @if($user->avatar)
-                                <img src="{{ asset('storage/' . $user->avatar) }}" alt="Profile Image" class="rounded-circle mt-2" width="80" height="80">
-                            @endif
-                            @error('avatar') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-
-                        {{-- Password --}}
-                        <div class="mb-3">
-                            <label for="password" class="form-label">New Password <small>(optional)</small></label>
-                            <input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror">
-                            @error('password') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-
-                        {{-- Password Confirmation --}}
-                        <div class="mb-3">
-                            <label for="password_confirmation" class="form-label">Confirm New Password</label>
-                            <input type="password" name="password_confirmation" id="password_confirmation" class="form-control">
-                        </div>
-
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
-                    </form>
-                </div>
-            </div>
+<div class="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <!-- Header Section -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-3xl font-black text-slate-900 tracking-tighter uppercase">Profile Settings</h2>
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Manage your personal information and security.</p>
         </div>
     </div>
+
+    @if(session('success'))
+        <div class="p-4 bg-green-50 border border-green-100 text-green-700 rounded-2xl flex items-center gap-3 shadow-sm animate-in zoom-in-95 duration-300">
+            <i class="bi bi-check-circle-fill text-xl"></i>
+            <span class="font-bold text-sm">{{ session('success') }}</span>
+        </div>
+    @endif
+
+    <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-8">
+        @csrf
+        @method('PUT')
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Sidebar: Avatar & Quick Info -->
+            <div class="lg:col-span-4 space-y-8">
+                <div class="card border-0 shadow-sm p-10 text-center relative overflow-hidden bg-white">
+                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-primary/5 rounded-full blur-3xl"></div>
+                    
+                    <div class="relative z-10 space-y-8">
+                        <div class="relative inline-block group">
+                            <div class="w-40 h-40 rounded-[48px] overflow-hidden border-4 border-white shadow-2xl mx-auto relative group-hover:scale-105 transition-all duration-500">
+                                <img src="{{ $user->avatar 
+                                            ? asset('storage/' . $user->avatar) 
+                                            : 'https://via.placeholder.com/200x200/f1f5f9/94a3b8?text=' . strtoupper(substr($user->name ?? 'U', 0, 2)) }}" 
+                                     class="w-full h-full object-cover" 
+                                     alt="{{ $user->name }}" id="avatarPreview">
+                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <i class="bi bi-camera text-white text-3xl"></i>
+                                </div>
+                            </div>
+                            
+                            <label for="avatar" class="absolute -bottom-2 -right-2 w-12 h-12 bg-primary text-white rounded-2xl flex items-center justify-center cursor-pointer shadow-xl hover:bg-primary-dark hover:scale-110 active:scale-95 transition-all border-4 border-white">
+                                <i class="bi bi-pencil-fill text-sm"></i>
+                                <input type="file" name="avatar" id="avatar" class="hidden" onchange="previewImage(this)">
+                            </label>
+                        </div>
+
+                        <div>
+                            <h3 class="text-2xl font-black text-slate-900 tracking-tighter uppercase mb-1">{{ $user->name }}</h3>
+                            <p class="text-[10px] font-black uppercase text-primary tracking-[0.2em] bg-primary/5 inline-block px-4 py-1.5 rounded-full border border-primary/10">{{ $user->user_id }}</p>
+                        </div>
+
+                        <div class="pt-8 border-t border-slate-50 grid grid-cols-2 gap-4">
+                            <div class="text-center p-4 bg-slate-50/50 rounded-2xl">
+                                <p class="text-[9px] font-black uppercase text-slate-400 tracking-widest mb-1">Orders</p>
+                                <span class="text-xl font-black text-slate-900 block">{{ $user->orders()->count() }}</span>
+                            </div>
+                            <div class="text-center p-4 bg-slate-50/50 rounded-2xl">
+                                <p class="text-[9px] font-black uppercase text-slate-400 tracking-widest mb-1">Joined</p>
+                                <span class="text-sm font-black text-slate-900 block mt-1">{{ $user->created_at->format('M Y') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm p-8 bg-slate-900 text-white relative overflow-hidden group">
+                    <h3 class="text-xs font-black tracking-[0.2em] uppercase mb-4 relative z-10">Data Privacy</h3>
+                    <p class="text-[11px] text-slate-400 font-medium leading-relaxed mb-6 relative z-10">Your information is encrypted and stored securely. We never share your personal data with third parties.</p>
+                    <a href="#" class="text-[10px] font-black text-primary uppercase tracking-widest hover:underline relative z-10">Learn More</a>
+                    <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
+                </div>
+            </div>
+
+            <!-- Main Form Column -->
+            <div class="lg:col-span-8 space-y-8">
+                <!-- Personal Info Card -->
+                <div class="card border-0 shadow-sm p-10 lg:p-12 bg-white relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-bl-[100px] -z-10"></div>
+                    
+                    <h4 class="text-lg font-black text-slate-900 tracking-tighter uppercase mb-10 flex items-center gap-4">
+                        <span class="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+                            <i class="bi bi-person-badge"></i>
+                        </span>
+                        Personal Information
+                    </h4>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="space-y-3">
+                            <label class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Full Name</label>
+                            <div class="relative group">
+                                <i class="bi bi-person absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-colors"></i>
+                                <input type="text" name="name" value="{{ old('name', $user->name) }}" 
+                                       class="w-full bg-slate-50/50 border border-slate-100 rounded-2xl pl-12 pr-6 py-4 text-sm font-bold focus:ring-4 focus:ring-primary/5 focus:border-primary focus:bg-white transition-all outline-none" required>
+                            </div>
+                            @error('name') <p class="text-[10px] text-red-500 font-bold mt-1 ml-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="space-y-3">
+                            <label class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Email Address</label>
+                            <div class="relative group">
+                                <i class="bi bi-envelope absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-colors"></i>
+                                <input type="email" name="email" value="{{ old('email', $user->email) }}" 
+                                       class="w-full bg-slate-50/50 border border-slate-100 rounded-2xl pl-12 pr-6 py-4 text-sm font-bold focus:ring-4 focus:ring-primary/5 focus:border-primary focus:bg-white transition-all outline-none" required>
+                            </div>
+                            @error('email') <p class="text-[10px] text-red-500 font-bold mt-1 ml-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="space-y-3">
+                            <label class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Phone Number</label>
+                            <div class="relative group">
+                                <i class="bi bi-phone absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-colors"></i>
+                                <input type="text" name="phone" value="{{ old('phone', $user->phone) }}" 
+                                       class="w-full bg-slate-50/50 border border-slate-100 rounded-2xl pl-12 pr-6 py-4 text-sm font-bold focus:ring-4 focus:ring-primary/5 focus:border-primary focus:bg-white transition-all outline-none">
+                            </div>
+                            @error('phone') <p class="text-[10px] text-red-500 font-bold mt-1 ml-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="space-y-3">
+                            <label class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">City / Region</label>
+                            <div class="relative group">
+                                <i class="bi bi-geo-alt absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-colors"></i>
+                                <input type="text" name="city" value="{{ old('city', $user->city) }}" 
+                                       class="w-full bg-slate-50/50 border border-slate-100 rounded-2xl pl-12 pr-6 py-4 text-sm font-bold focus:ring-4 focus:ring-primary/5 focus:border-primary focus:bg-white transition-all outline-none">
+                            </div>
+                        </div>
+
+                        <div class="col-span-full space-y-3">
+                            <label class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Shipping Address</label>
+                            <div class="relative group">
+                                <i class="bi bi-map absolute left-5 top-6 text-slate-300 group-focus-within:text-primary transition-colors"></i>
+                                <textarea name="address" rows="3" 
+                                          class="w-full bg-slate-50/50 border border-slate-100 rounded-3xl pl-12 pr-6 py-5 text-sm font-bold focus:ring-4 focus:ring-primary/5 focus:border-primary focus:bg-white transition-all outline-none resize-none leading-relaxed">{{ old('address', $user->address) }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Card -->
+                <div class="card border-0 shadow-sm p-10 lg:p-12 bg-white relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-rose-50 rounded-bl-[100px] -z-10"></div>
+                    
+                    <h4 class="text-lg font-black text-slate-900 tracking-tighter uppercase mb-10 flex items-center gap-4">
+                        <span class="w-10 h-10 bg-rose-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-rose-500/20">
+                            <i class="bi bi-shield-lock"></i>
+                        </span>
+                        Account Security
+                    </h4>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="space-y-3">
+                            <label class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">New Password <span class="text-slate-300 ml-1">(Optional)</span></label>
+                            <div class="relative group">
+                                <i class="bi bi-key absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-colors"></i>
+                                <input type="password" name="password" 
+                                       class="w-full bg-slate-50/50 border border-slate-100 rounded-2xl pl-12 pr-6 py-4 text-sm font-bold focus:ring-4 focus:ring-primary/5 focus:border-primary focus:bg-white transition-all outline-none placeholder:text-slate-300" placeholder="Minimum 8 characters">
+                            </div>
+                            @error('password') <p class="text-[10px] text-red-500 font-bold mt-1 ml-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="space-y-3">
+                            <label class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Confirm Password</label>
+                            <div class="relative group">
+                                <i class="bi bi-shield-check absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-colors"></i>
+                                <input type="password" name="password_confirmation" 
+                                       class="w-full bg-slate-50/50 border border-slate-100 rounded-2xl pl-12 pr-6 py-4 text-sm font-bold focus:ring-4 focus:ring-primary/5 focus:border-primary focus:bg-white transition-all outline-none placeholder:text-slate-300" placeholder="Repeat new password">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-6 pt-4">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center sm:text-left">
+                        Last profile update: <span class="text-slate-600 ml-1">{{ $user->updated_at->diffForHumans() }}</span>
+                    </p>
+                    <button type="submit" class="w-full sm:w-auto px-16 py-5 bg-slate-900 hover:bg-black text-white font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl shadow-2xl shadow-slate-900/30 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 group">
+                        Update Account
+                        <i class="bi bi-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
+
+<script>
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('avatarPreview');
+                preview.src = e.target.result;
+                preview.parentElement.classList.add('animate-in', 'zoom-in-95', 'duration-500');
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
 @endsection

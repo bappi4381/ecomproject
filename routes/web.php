@@ -35,8 +35,11 @@ Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.
 Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
 
 
-Route::get('/checkout', [CheckoutController::class, 'checkoutIndex'])->name('checkout.index');
-Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('checkout.placeOrder');
+// Protected checkout routes
+Route::middleware('user')->group(function () {
+    Route::get('/checkout', [CheckoutController::class, 'checkoutIndex'])->name('checkout.index');
+    Route::post('/place-order', [CheckoutController::class, 'placeOrder'])->name('checkout.placeOrder');
+});
 
 Route::get('/orders/success/{order}', [CheckoutController::class, 'success'])->name('orders.success');
 
@@ -55,6 +58,12 @@ Route::get('/login', [AuthController::class, 'showAccountPage'])->name('user.aut
 Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('user.auth.register');
 Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
+
+// Password Recovery
+Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::post('/forgot-password', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 Route::prefix('user')->middleware('user')->group(function () {
     Route::get('/dashboard', [UserDashboardController::class, 'userDashboard'])->name('user.dashboard');
     Route::get('/profile', [UserDashboardController::class, 'profileIndex'])->name('user.profile');

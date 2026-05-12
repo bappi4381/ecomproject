@@ -30,35 +30,15 @@ class CheckoutController extends Controller
             'city' => 'required|string|max:100',
             'region' => 'nullable|string|max:100',
             'payment_method' => 'required|in:cod,online',
-            ''
         ]);
 
         $cart = session()->get('cart', []);
-
         if (empty($cart)) {
             return redirect()->route('books.index')->with('error', 'Cart is empty!');
         }
 
-        $password = null;
-
-        // Auto user create if guest
-        if (!Auth::check()) {
-            $password = uniqid('pass_');
-
-            $user = User::firstOrCreate(
-                ['email' => $request->email],
-                [
-                    'name' => $request->name,
-                    'password' => Hash::make($password),
-                    'phone' => $request->phone,
-                    'address' => $request->shipping_address,
-                ]
-            );
-
-            Auth::login($user);
-        }
-
         $user = Auth::user();
+        $password = null;
 
         // Subtotal
         $subtotal = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);

@@ -1,6 +1,6 @@
 @extends('frontend.layout')
 
-@section('title', 'Welcome Back - Login')
+@section('title', 'Reset Password - Recovery')
 
 @section('content')
 <!-- Page Header -->
@@ -9,11 +9,11 @@
         <div class="absolute top-0 right-0 w-96 h-96 bg-primary rounded-full blur-[150px]"></div>
     </div>
     <div class="max-w-7xl mx-auto px-4 relative z-10 text-center">
-        <h1 class="text-4xl lg:text-5xl font-black text-white tracking-tighter uppercase mb-4">Account Login</h1>
+        <h1 class="text-4xl lg:text-5xl font-black text-white tracking-tighter uppercase mb-4">Set New Password</h1>
         <div class="flex items-center justify-center gap-2 text-slate-400 font-bold text-xs uppercase tracking-widest">
             <a href="{{ route('home') }}" class="hover:text-primary transition-colors">Home</a>
             <i class="bi bi-chevron-right text-[10px]"></i>
-            <span class="text-white">Login</span>
+            <span class="text-white">Reset Password</span>
         </div>
     </div>
 </div>
@@ -25,8 +25,8 @@
             <div class="absolute -top-10 -right-10 w-32 h-32 bg-primary/5 rounded-full blur-2xl"></div>
             
             <div class="relative z-10">
-                <h3 class="text-2xl font-black text-slate-900 tracking-tighter uppercase mb-2">Welcome Back</h3>
-                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-10">Enter your credentials to access your account</p>
+                <h3 class="text-2xl font-black text-slate-900 tracking-tighter uppercase mb-2">New Password</h3>
+                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-10">Please enter your new secure password below.</p>
 
                 @if (session('error'))
                     <div class="mb-8 p-4 bg-red-50 border border-red-100 text-red-700 rounded-2xl flex items-center gap-3">
@@ -34,31 +34,24 @@
                         <span class="font-bold text-xs">{{ session('error') }}</span>
                     </div>
                 @endif
-                @if (session('success'))
-                    <div class="mb-8 p-4 bg-green-50 border border-green-100 text-green-700 rounded-2xl flex items-center gap-3">
-                        <i class="bi bi-check-circle-fill text-xl"></i>
-                        <span class="font-bold text-xs">{{ session('success') }}</span>
-                    </div>
-                @endif
 
-                <form action="{{ route('auth.login') }}" method="POST" class="space-y-6">
+                <form action="{{ route('password.update') }}" method="POST" class="space-y-6">
                     @csrf
+                    <input type="hidden" name="token" value="{{ $token }}">
+                    
                     <div class="space-y-2">
                         <label for="email" class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Email Address</label>
                         <div class="relative group">
                             <i class="bi bi-envelope absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors"></i>
-                            <input type="email" name="email" id="email" value="{{ old('email') }}" 
+                            <input type="email" name="email" id="email" value="{{ $email ?? old('email') }}" 
                                    class="w-full bg-slate-50 border-none rounded-2xl pl-14 pr-6 py-4 text-sm font-bold focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none" 
-                                   placeholder="you@example.com" required>
+                                   placeholder="you@example.com" required readonly>
                         </div>
                         @error('email') <p class="text-[10px] text-red-500 font-bold mt-1 ml-1">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="space-y-2">
-                        <div class="flex justify-between items-center px-1">
-                            <label for="password" class="text-[10px] font-black uppercase text-slate-400 tracking-widest">Password</label>
-                            <a href="{{ route('password.request') }}" class="text-[10px] font-black uppercase text-primary tracking-widest hover:underline">Forgot?</a>
-                        </div>
+                        <label for="password" class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">New Password</label>
                         <div class="relative group">
                             <i class="bi bi-lock absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors"></i>
                             <input type="password" name="password" id="password" 
@@ -68,23 +61,21 @@
                         @error('password') <p class="text-[10px] text-red-500 font-bold mt-1 ml-1">{{ $message }}</p> @enderror
                     </div>
 
-                    <div class="flex items-center gap-3 px-1">
-                        <input type="checkbox" name="remember" id="remember" class="w-4 h-4 rounded border-slate-200 text-primary focus:ring-primary/20">
-                        <label for="remember" class="text-[10px] font-black uppercase text-slate-500 tracking-widest cursor-pointer">Remember me for 30 days</label>
+                    <div class="space-y-2">
+                        <label for="password_confirmation" class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Confirm New Password</label>
+                        <div class="relative group">
+                            <i class="bi bi-shield-lock absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors"></i>
+                            <input type="password" name="password_confirmation" id="password_confirmation" 
+                                   class="w-full bg-slate-50 border-none rounded-2xl pl-14 pr-6 py-4 text-sm font-bold focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none" 
+                                   placeholder="••••••••" required>
+                        </div>
                     </div>
 
                     <button type="submit" class="w-full py-5 bg-primary hover:bg-primary-dark text-white font-black uppercase tracking-[0.2em] text-xs rounded-2xl shadow-xl shadow-primary/30 transition-all active:scale-95 flex items-center justify-center gap-3 group">
-                        Sign In Account
-                        <i class="bi bi-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        Update Password
+                        <i class="bi bi-check-circle group-hover:scale-110 transition-transform"></i>
                     </button>
                 </form>
-
-                <div class="mt-12 pt-8 border-t border-slate-100 text-center">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                        Don't have an account yet? 
-                        <a href="{{ route('user.auth.register') }}" class="text-primary hover:underline ml-2">Create Account</a>
-                    </p>
-                </div>
             </div>
         </div>
     </div>

@@ -18,7 +18,7 @@ class DashboardController extends Controller
         $totalProducts = Product::count();
         $totalOrders = Order::count();
         $totalUsers = User::count();
-        $totalSales = Order::where('payment_status', 'paid')->sum('total_amount_with_delivery');
+        $totalSales = Order::where('payment_status', 'paid')->sum('total_price');
 
         $recentOrders = Order::with('user')->latest()->take(5)->get();
         
@@ -27,7 +27,7 @@ class DashboardController extends Controller
         
         // Data for Sales Chart (Last 6 Months)
         $salesData = Order::where('payment_status', 'paid')
-            ->selectRaw('SUM(total_amount_with_delivery) as total, MONTHNAME(created_at) as month')
+            ->selectRaw('SUM(total_price) as total, MONTHNAME(created_at) as month')
             ->groupBy('month')
             ->orderByRaw('MIN(created_at) ASC')
             ->take(6)
